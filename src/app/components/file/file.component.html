@@ -1,0 +1,101 @@
+<div class="p-d-flex cards-wrapper">
+  <div
+    class="example-box"
+    [class]="width && width.length > 0 ? 'p-col-' + width : 'p-col-12'"
+  >
+    <p-card class="custom-card">
+      <div class="image-wrapper">
+        <!-- Start image file type cases -->
+        <div [ngSwitch]="type">
+          <img
+            alt="ImageCard"
+            [src]="url"
+            [name]="name"
+            [id]="id"
+            *ngSwitchCase="'image'"
+            [ngStyle]="{ height: height }"
+          />
+
+          <img
+            alt="ImageCard"
+            src="../../../assets/images/pdf-file.png"
+            [name]="name"
+            [id]="id"
+            *ngSwitchCase="'pdf'"
+            [ngStyle]="{ height: height }"
+          />
+          <img
+            alt="ImageCard"
+            src="../../../assets/images/xls.png"
+            [name]="name"
+            [id]="id"
+            *ngSwitchCase="'excel'"
+            [ngStyle]="{ height: height }"
+          />
+          <img
+            alt="ImageCard"
+            src="../../../assets/images/doc.png"
+            [name]="name"
+            [id]="id"
+            *ngSwitchCase="'document'"
+            [ngStyle]="{ height: height }"
+          />
+        </div>
+        <!-- End image file type cases -->
+
+        <!-- start caption functionality-->
+        <div class="edit-caption">
+          <h4
+            class="example-box"
+            (click)="captionClickEvent()"
+            [title]="caption"
+            *ngIf="!editableCaption"
+          >
+            {{ caption }}
+          </h4>
+          <div
+            class="p-d-flex p-flex-column p-ai-end"
+            *ngIf="editableCaption && allowEditableCaption"
+          >
+            <input
+              type="text"
+              name="caption"
+              [(ngModel)]="caption"
+              pInputText
+              (blur)="captionSave(id, name, url, type, caption)"
+            />
+            <div class="icons">
+              <i
+                class="pi pi-check"
+                (click)="captionSave(id, name, url, type, caption)"
+              ></i>
+              <i class="pi pi-times" (click)="cancel()"></i>
+            </div>
+          </div>
+          <!-- End caption functionality-->
+
+          <!-- start header action button functionality -->
+          <div class="action-buttons">
+            <button
+              pButton
+              type="button"
+              icon="pi pi-arrow-circle-down"
+              (click)="downloadFile(url)"
+              class="p-button-rounded p-button-text"
+              *ngIf="allowDownloadFile"
+            ></button>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-trash"
+              (click)="onDeleteFile(id, name, url, type, caption)"
+              class="p-button-rounded p-button-text"
+              *ngIf="allowDeleteFile"
+            ></button>
+          </div>
+          <!-- End header action button functionality -->
+        </div>
+      </div>
+    </p-card>
+  </div>
+</div>

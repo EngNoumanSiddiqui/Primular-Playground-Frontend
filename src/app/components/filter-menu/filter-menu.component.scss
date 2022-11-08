@@ -1,0 +1,33 @@
+:host ::ng-deep .p-dropdown {
+    width: 14rem;
+  }
+  :host {
+    ::ng-deep {
+      .filter .p-dropdown{
+        width: 36px;
+        height: 36px;
+        
+      }
+      .filter .p-inputtext {
+        display: none;
+      }
+      .filter .p-dropdown{
+        width: 36px;
+        border-radius: 50% !important;
+        border: 0px;
+        &:hover{
+          background: rgba(0,0,0,0.05);
+        }
+      }
+      .filter .pi-chevron-down:before{
+        content: "\e94c";
+      }
+      .filter .p-dropdown .p-dropdown-trigger{
+        width: 36px;
+      }
+      .filter .p-dropdown .p-dropdown-clear-icon{
+        display: none !important;
+      }
+    }
+  }
+  

@@ -1,0 +1,33 @@
+<div class="p-d-flex sidebar-wrapper">
+  <!-- left side bar -->
+  <app-sidebar
+    [collapseSidebar]="true"
+    [sidebarItems]="leftSidebarItems"
+    [menuTitle]="'Sidebar'"
+  ></app-sidebar>
+
+  <div class="center-content">
+    <span class="scrollContacts">
+      <h1>Contact</h1>
+      <app-dynamic-form [form]="dynamicForm"></app-dynamic-form>
+    </span>
+
+    <span class="scrollMessages">
+      <h1>Messages</h1>
+      <app-dynamic-form [form]="dynamicForm"></app-dynamic-form>
+    </span>
+
+    <span class="scrollNotification">
+      <h1>Notification</h1>
+      <span class="lastitem">
+        <app-dynamic-form [form]="dynamicForm"></app-dynamic-form>
+      </span>
+    </span>
+  </div>
+
+  <!-- right side bar -->
+  <app-sidebar
+    [sidebarItems]="rightSidebarItems"
+    [menuTitle]="'Sidebar'"
+  ></app-sidebar>
+</div>

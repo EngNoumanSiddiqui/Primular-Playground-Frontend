@@ -1,0 +1,10 @@
+<se-grid
+  [rows]="holds"
+  [columns]="columns"
+  [allowColumnToggle]="false"
+  [useServerSideEvents]="true"
+  [pagination]="false"
+  [defaultRows]="10"
+  [showCurrentPageReport]="true"
+  (onServerSideEventChange)="handleServerSideEventChange($event)"
+></se-grid>

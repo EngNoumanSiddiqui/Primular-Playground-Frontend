@@ -1,0 +1,57 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
+}
+
+.center-content {
+  background: #fff;
+  height: calc(100vh - 52px);
+  overflow-y: auto;
+}
+
+.center-content span:last-child .lastitem {
+  min-height: 100vh;
+  display: block;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #eee;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #f8f9fa;
+}
+
+/* set height to dialog */
+.p-dialog .p-dialog-content {
+  height: 100%;
+}
+.global-filter-visible .p-dialog-content {
+  overflow: visible !important;
+}
+.grid-table .p-datatable-wrapper {
+  max-height: calc(100vh - 270px);
+}
+
+.center-content + app-sidebar {
+  position: relative;
+}
+.p-dialog-mask.p-component-overlay {
+  background-color: unset !important;
+}

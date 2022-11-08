@@ -1,0 +1,23 @@
+<h1>Leads Component</h1>
+<!-- Global filter -->
+<app-filter
+  [globalFilters]="globalFilters"
+  (filtersApplied)="globalFiltersApplied($event)"
+></app-filter>
+
+<se-grid
+  [rows]="leads"
+  [columns]="columns"
+  [totalRecords]="totalRecords"
+  [globalFilterData]="globalFilterData"
+  [allowColumnToggle]="true"
+  [useServerSideEvents]="true"
+  [pagination]="true"
+  [defaultRows]="10"
+  [showCurrentPageReport]="true"
+  (onRowClick)="handleRowClick($event)"
+  (onSortChange)="handleSortChange($event)"
+  (onFilterChange)="handleFilterChange($event)"
+  (onPageChange)="handleServerSideEventPagination($event)"
+  (onServerSideEventChange)="handleServerSideEventChange($event)"
+></se-grid>

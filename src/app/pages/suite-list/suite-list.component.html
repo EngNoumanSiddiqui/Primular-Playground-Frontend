@@ -1,0 +1,37 @@
+<h1>Suite Selection</h1>
+
+<button
+  pButton
+  type="button"
+  label="Add"
+  (click)="newSuite()"
+  class="p-button-lg"
+>
+  New Suite
+</button>
+<br />
+<!-- Global filter -->
+<app-filter
+  *ngIf="globalFilters"
+  [globalFilters]="globalFilters"
+  (filtersApplied)="globalFiltersApplied($event)"
+></app-filter>
+<se-grid
+  *ngIf="globalFilterData"
+  [rows]="suites"
+  [columns]="columns"
+  [totalRecords]="totalRecords"
+  [globalFilterData]="globalFilterData"
+  [allowColumnToggle]="true"
+  [useServerSideEvents]="true"
+  [pagination]="true"
+  [defaultRows]="10"
+  [showCurrentPageReport]="true"
+  (onRowClick)="handleRowClick($event)"
+  (onSortChange)="handleSortChange($event)"
+  (onFilterChange)="handleFilterChange($event)"
+  (onPageChange)="handleServerSideEventPagination($event)"
+  (onServerSideEventChange)="handleServerSideEventChange($event)"
+  [scrollable]="true"
+  [scrollHeight]="'500px'"
+></se-grid>

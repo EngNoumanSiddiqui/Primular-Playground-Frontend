@@ -1,0 +1,34 @@
+<span
+  *ngIf="!isSidebarHidden && sidebarItemsList && sidebarItemsList.length > 0"
+>
+  <span *ngIf="!navHidden">
+    <nav
+      *ngIf="!collapseSidebar"
+      class="navbar navbar-expand-lg navbar-light bg-light p-p-0 grow-1"
+      [ngClass]="toggleMenu ? 'hide-nav' : ''"
+    >
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        <i
+          class="pi pi-fw toggle-icon"
+          [ngClass]="toggleMenu ? 'pi-chevron-left' : 'pi-chevron-right'"
+        ></i>
+        <span>{{ menuTitle }}</span>
+      </button>
+      <p-panelMenu
+        [model]="menuItems"
+        (click)="clickedMenu(menuItems)"
+      ></p-panelMenu>
+    </nav>
+  </span>
+
+  <span
+    *ngIf="collapseSidebar"
+    class="navbar navbar-expand-lg navbar-light bg-light p-p-0 grow-1"
+    class="hide-nav"
+  >
+    <p-panelMenu
+      [model]="menuItems"
+      (click)="clickedMenu(menuItems)"
+    ></p-panelMenu>
+  </span>
+</span>

@@ -1,0 +1,19 @@
+<div class="center-content">
+  <h1>Grid Component with client side pagination</h1>
+  <app-grid
+    [rows]="users"
+    [columns]="lookUpColumns"
+    [totalRecords]="totalRecords"
+    [pagination]="true"
+    [defaultRows]="5"
+    [lookupFilters]="true"
+    [allowColumnToggle]="true"
+    [showCurrentPageReport]="true"
+    (onRowClick)="handleRowClick($event)"
+    (onSortChange)="handleSortChange($event)"
+    (onFilterChange)="handleFilterChange($event)"
+    (onPageChange)="handlePagination($event)"
+    [useServerSideEvents]="false"
+    (onServerSideEventChange)="handleServerSideEventChange($event)"
+  ></app-grid>
+</div>

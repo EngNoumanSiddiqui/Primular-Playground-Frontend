@@ -1,0 +1,159 @@
+<div *ngIf="!isHeaderHidden && headers" class="card p-sticky p-m-2">
+  <div class="header-list p-p-1 p-d-flex">
+    <div
+      [class]="'p-md-' + headerField.column + ' p-sm-6 p-col-12 p-py-0'"
+      class="header-list-item p-jc-center"
+      *ngFor="let headerField of headers.fields"
+    >
+      <div [ngSwitch]="headerField.control">
+        <!-- For Dropdown -->
+        <span *ngIf="!headerField.hidden">
+          <div
+            class="p-d-flex p-flex-wrap p-jc-center p-ai-center"
+            *ngSwitchCase="dynamicCase.DROPDOWN"
+          >
+            <b
+              ><label for="">{{ headerField.label }}</label></b
+            >
+            <p-dropdown
+              [placeholder]="headerField.label"
+              [options]="headerField.data"
+              [(ngModel)]="headerField.value"
+              (click)="headerField.onClick ? headerField.onClick() : ''"
+              [disabled]="headerField.disabled"
+            >
+            </p-dropdown>
+          </div>
+        </span>
+        <!-- For label  -->
+        <span *ngIf="!headerField.hidden">
+          <div
+            class="p-d-flex p-flex-wrap p-jc-center p-ai-center"
+            *ngSwitchCase="dynamicCase.LABEL"
+          >
+            <b
+              ><label for="">{{ headerField.label }}</label></b
+            >
+            <!-- for value -->
+            <Span *ngIf="!headerField.format">
+              <label for="">{{ headerField.value }}</label>
+            </Span>
+
+            <!-- for currency -->
+            <span
+              *ngIf="
+                headerField.format && headerField.format.type === 'currency'
+              "
+            >
+              <label>{{
+                headerField.value
+                  | currency
+                    : (headerField.format.formatParams &&
+                      headerField.format.formatParams.currency
+                        ? headerField.format.formatParams.currency
+                        : 'USD')
+              }}</label>
+            </span>
+
+            <!-- for percent -->
+            <span
+              *ngIf="
+                headerField.format && headerField.format.type === 'percent'
+              "
+            >
+              <label>{{ headerField.value }}%</label>
+            </span>
+
+            <!-- for decimal -->
+            <span
+              *ngIf="
+                headerField.format && headerField.format.type === 'decimal'
+              "
+            >
+              <label>{{
+                headerField.value
+                  | number
+                    : (headerField.format.formatParams &&
+                      headerField.format.formatParams.digitsInfo
+                        ? '2.' +
+                          headerField.format.formatParams.digitsInfo +
+                          '-8'
+                        : '2.2-8')
+              }}</label>
+            </span>
+          </div>
+        </span>
+
+        <!-- Checkbox -->
+        <span *ngIf="!headerField.hidden">
+          <div class="p-col-12 p-0" *ngSwitchCase="dynamicCase.CHECKBOX">
+            <label>{{ headerField.label }}</label>
+            <p-checkbox
+              class="p-d-flex p-ai-center"
+              [(ngModel)]="headerField.value"
+              binary="true"
+              [disabled]="headerField.disabled"
+            ></p-checkbox>
+          </div>
+        </span>
+
+        <!-- Calendar -->
+        <span *ngIf="!headerField.hidden">
+          <div class="p-col-12 p-0" *ngSwitchCase="dynamicCase.CALENDAR">
+            <label>{{ headerField.label }}</label>
+            <p-calendar
+              class="flex-grow-1 p-mr-2"
+              [placeholder]="headerField.label"
+              [showButtonBar]="true"
+              [(ngModel)]="headerField.value"
+              [disabled]="headerField.disabled"
+              hourFormat="12"
+              dataType="string"
+              [timeOnly]="headerField.timeOnly"
+              [showTime]="headerField.showTime"
+              [dateFormat]="
+                headerField.format ? headerField.format.dateType : 'mm/dd/yy'
+              "
+            >
+            </p-calendar>
+          </div>
+        </span>
+
+        <!-- Hyperlink-->
+        <span *ngIf="!headerField.hidden">
+          <div
+            class="link-label custom-link"
+            *ngSwitchCase="dynamicCase.HYPERLINK"
+          >
+            <a
+              *ngIf="!headerField.disabled"
+              class="pl-2"
+              [href]="headerField.hyperlink?.link"
+              [target]="headerField.hyperlink?.target"
+            >
+              {{ headerField.label }}
+            </a>
+            <label class="custom-link" *ngIf="headerField.disabled">
+              {{ headerField.label }}
+            </label>
+          </div>
+        </span>
+
+        <!-- Button -->
+        <span *ngIf="!headerField.hidden">
+          <div class="p-col-12 p-0" *ngSwitchCase="dynamicCase.BUTTON">
+            <button
+              pButton
+              pRipple
+              type="button"
+              label="{{ headerField.label }}"
+              class="{{ headerField.class }}"
+              (click)="headerField.onClick ? headerField.onClick() : ''"
+              [disabled]="headerField.disabled"
+            ></button>
+          </div>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

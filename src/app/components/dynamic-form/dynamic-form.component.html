@@ -1,0 +1,1021 @@
+<form *ngIf="!isFormHidden && form">
+  <div class="p-d-flex p-flex-wrap container w-100 my-5">
+    <span [ngClass]="{ 'fixed-height': stickyActions }">
+      <div
+        *ngFor="let formSection of form.formSections"
+        [class]="!formSection.hidden ? 'card w-100' : ''"
+      >
+        <span (click)="clickedSection(formSection)">
+          <div *ngIf="!formSection ? '' : sectionDisabled(formSection)">
+            <span [class]="formSection.class" *ngIf="!formSection.hidden">
+              <p-accordion>
+                <p-accordionTab
+                  [selected]="formSection.expanded === false ? false : true"
+                  [disabled]="formSection.accordionDisabled"
+                  [ngClass]="!formSection.showAccordion ? 'hide-accordian' : ''"
+                >
+                  <p-header>
+                    <i [class]="formSection.icon" class="p-mr-1 p-pl-2"></i
+                    ><span class="p-pl-4">{{ formSection.name }}</span>
+                  </p-header>
+                  <div class="p-d-flex p-ai-center p-col">
+                    <label
+                      *ngIf="!formSection.showAccordion"
+                      for="name"
+                      class="p-mb-0 p-d-flex p-ai-center p-mr-3"
+                    >
+                      <i [class]="formSection.icon" class="p-mr-1"></i>
+                      <b> {{ formSection.name }} </b>
+                    </label>
+                    <div
+                      *ngFor="let link of formSection.links"
+                      [class]="formSection.disabled ? 'disabled-link' : ''"
+                    >
+                      <label
+                        class="p-mr-3"
+                        [class]="link.name ? 'custom-link' : ''"
+                        (click)="link.onClick()"
+                      >
+                        {{ link.name }}
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="p-d-flex p-flex-wrap">
+                    <div
+                      [class]="
+                        formField.column
+                          ? 'p-col-' +
+                            formField.column +
+                            setClassName(formField)
+                          : form.column
+                          ? 'p-col-' + form.column + setClassName(formField)
+                          : 'p-col-12 p-md-3 p-d-flex p-flex-column' +
+                            setClassName(formField)
+                      "
+                      *ngFor="
+                        let formField of formSection.fields;
+                        let formFieldIndex = index
+                      "
+                    >
+                      <!-- labelControl Hyperlink on Lookup Control Field-->
+
+                      <div *ngIf="formField.label?.labelControl">
+                        <div
+                          class="link-label custom-link p-mt-1"
+                          *ngIf="
+                            formField.label?.labelControl.hyperlink &&
+                            formField.label?.labelControl.hyperlink.target !==
+                              '_iframe'
+                          "
+                        >
+                          <a
+                            class="pl-2"
+                            tabindex="-1"
+                            (click)="
+                              formField.onClick ? onClickEvent(formField) : ''
+                            "
+                            [target]="
+                              formField.label.labelControl?.hyperlink?.target
+                            "
+                            [href]="
+                              formField.label.labelControl?.hyperlink?.link
+                            "
+                            [title]="formField.label.name"
+                          >
+                            {{ formField.label.name }}
+                            <span *ngIf="formField.requiredField">*</span>
+                          </a>
+                        </div>
+                        <div
+                          class="link-label custom-link p-mt-1"
+                          *ngIf="
+                            formField.label?.labelControl.hyperlink &&
+                            formField.label?.labelControl.hyperlink.target ===
+                              '_iframe'
+                          "
+                        >
+                          <a
+                            class="pl-2"
+                            tabindex="-1"
+                            (click)="loadLabelControlIFrame(formField)"
+                            [title]="formField.label.name"
+                          >
+                            {{ formField.label.name }}
+                            <span *ngIf="formField.requiredField">*</span>
+                          </a>
+                        </div>
+                        <!-- labelControl on addTextbox -->
+                        <div
+                          class="link-label custom-link p-mt-1"
+                          *ngIf="
+                            formField.label &&
+                            formField.label.labelControl &&
+                            formField.label.labelControl.lookupControl
+                          "
+                        >
+                          <a
+                            tabindex="-1"
+                            [class]="
+                              formField.label.disabled
+                                ? 'disable-label-control'
+                                : 'pl-2'
+                            "
+                            (click)="selectLookupLabel(formField)"
+                            [title]="formField.label.name"
+                          >
+                            {{ formField.label.name }}
+                            <span *ngIf="formField.requiredField">*</span>
+                          </a>
+                        </div>
+                      </div>
+                      <div [ngSwitch]="formField.control">
+                        <!-- Spacer Control -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.SPACER"
+                          >
+                            <span
+                              [class]="
+                                formField.column
+                                  ? 'p-col-' + formField.column
+                                  : ''
+                              "
+                            ></span>
+                          </div>
+                        </span>
+
+                        <!-- Input TextArea -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.TEXTAREA"
+                          >
+                            <label
+                              [class]="
+                                formField.label.onClick ? 'custom-link' : ''
+                              "
+                              [title]="
+                                formField.label.labelControl
+                                  ? ''
+                                  : formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              "
+                              (click)="
+                                formField.label.onClick &&
+                                  formField.label.onClick()
+                              "
+                            >
+                              {{
+                                formField.label.labelControl
+                                  ? ''
+                                  : formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              }}
+                              <span *ngIf="formField.requiredField">*</span>
+                            </label>
+                            <textarea
+                              [class]="
+                                formField.errorMessage
+                                  ? 'ng-invalid ng-dirty'
+                                  : 'form-control'
+                              "
+                              pInputTextarea
+                              [rows]="formField.row"
+                              [(ngModel)]="formField.value"
+                              [name]="formField.label"
+                              [disabled]="formField.disabled"
+                              [ngStyle]="{
+                                height: formField.height ? formField.height : ''
+                              }"
+                              (blur)="onFocusOutEvent(formField)"
+                            ></textarea>
+                          </div>
+                        </span>
+
+                        <!-- Text Input -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.INPUT"
+                          >
+                            <span
+                              [class]="
+                                formField.disabled &&
+                                !formField.showBottomBorder
+                                  ? 'disabled-link'
+                                  : ''
+                              "
+                            >
+                              <label
+                                *ngIf="!formField.label.labelControl"
+                                [class]="
+                                  formField.label.onClick ? 'custom-link' : ''
+                                "
+                                [title]="
+                                  formField.label &&
+                                  typeOf(formField.label) === 'object'
+                                    ? formField.label.name
+                                    : formField.label
+                                "
+                                (click)="
+                                  formField.label.onClick &&
+                                    formField.label.onClick()
+                                "
+                              >
+                                {{
+                                  formField.label &&
+                                  typeOf(formField.label) === 'object'
+                                    ? formField.label.name
+                                    : formField.label
+                                }}
+                                <span *ngIf="formField.requiredField">*</span>
+                              </label>
+                            </span>
+                            <input
+                              [class]="
+                                formField.errorMessage
+                                  ? 'ng-invalid ng-dirty'
+                                  : 'form-control'
+                              "
+                              [id]="
+                                formField.showBottomBorder ? 'remove-boder' : ''
+                              "
+                              type="text"
+                              pInputText
+                              [(ngModel)]="
+                                formField.value &&
+                                typeOf(formField.value) === 'object'
+                                  ? formField.value.text
+                                  : formField.value
+                              "
+                              [name]="
+                                formField.field
+                                  ? formField.field
+                                  : formField.label
+                              "
+                              (click)="handleClickEvent(formField)"
+                              [disabled]="formField.disabled"
+                              (blur)="onFocusOutEvent(formField)"
+                            />
+                            <span *ngIf="!formField?.isValid" class="error">{{
+                              formField.errorMessage
+                            }}</span>
+                          </div>
+                        </span>
+                        <!-- Number Input -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.NUMERIC"
+                          >
+                            <label
+                              [class]="
+                                formField.label.onClick ? 'custom-link' : ''
+                              "
+                              [title]="
+                                formField.label.labelControl
+                                  ? ''
+                                  : formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              "
+                              (click)="
+                                formField.label.onClick &&
+                                  formField.label.onClick()
+                              "
+                            >
+                              {{
+                                formField.label.labelControl
+                                  ? ''
+                                  : formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              }}
+                              <span *ngIf="formField.requiredField">*</span>
+                            </label>
+                            <span *ngIf="!formField.format">
+                              <input
+                                [class]="
+                                  formField.errorMessage
+                                    ? 'ng-invalid ng-dirty'
+                                    : 'form-control'
+                                "
+                                type="number"
+                                pInputText
+                                [(ngModel)]="formField.value"
+                                [name]="formField.field"
+                                (click)="
+                                  formField.onClick ? formField.onClick() : ''
+                                "
+                                [disabled]="formField.disabled"
+                                (blur)="onFocusOutEvent(formField)"
+                              />
+                            </span>
+                            <!-- for Currency && Decimal && Percent -->
+                            <span *ngIf="formField.format">
+                              <p-inputNumber
+                                [class]="
+                                  formField.errorMessage
+                                    ? 'ng-invalid ng-dirty'
+                                    : 'form-control'
+                                "
+                                [(ngModel)]="formField.value"
+                                [name]="formField.field"
+                                (click)="selectLookupField(formField)"
+                                [disabled]="formField.disabled"
+                                (blur)="onFocusOutEvent(formField)"
+                                [mode]="
+                                  formField.format &&
+                                  formField.format.type === 'currency'
+                                    ? 'currency'
+                                    : 'decimal'
+                                "
+                                [currency]="
+                                  formField.format &&
+                                  formField.format.type === 'currency' &&
+                                  formField.format.formatParams &&
+                                  formField.format.formatParams.currency
+                                    ? formField.format.formatParams.currency
+                                    : 'USD'
+                                "
+                                [locale]="
+                                  formField.format &&
+                                  formField.format.type === 'currency' &&
+                                  formField.format.formatParams &&
+                                  formField.format.formatParams.locale
+                                    ? formField.format.formatParams.locale
+                                    : 'en-US'
+                                "
+                                [minFractionDigits]="
+                                  formField.format &&
+                                  formField.format.formatParams &&
+                                  formField.format.formatParams.digitsInfo
+                                    ? formField.format.formatParams.digitsInfo
+                                    : formField.format &&
+                                      formField.format.type === 'decimal'
+                                    ? '2'
+                                    : '0'
+                                "
+                                [suffix]="
+                                  formField.format &&
+                                  formField.format.type === 'percent'
+                                    ? '%'
+                                    : ''
+                                "
+                              >
+                              </p-inputNumber>
+                            </span>
+                            <span *ngIf="!formField?.isValid" class="error">{{
+                              formField.errorMessage
+                            }}</span>
+                            <span *ngIf="formField.required"> * </span>
+                          </div>
+                        </span>
+
+                        <!-- Password Input -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.PASSWORD"
+                          >
+                            <label
+                              [class]="
+                                formField.label.onClick ? 'custom-link' : ''
+                              "
+                              [title]="
+                                formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              "
+                              (click)="
+                                formField.label.onClick &&
+                                  formField.label.onClick()
+                              "
+                            >
+                              {{
+                                formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              }}
+                              <span *ngIf="formField.requiredField">*</span>
+                            </label>
+                            <input
+                              [class]="
+                                formField.errorMessage
+                                  ? 'ng-invalid ng-dirty'
+                                  : 'form-control'
+                              "
+                              type="password"
+                              pInputText
+                              [(ngModel)]="formField.value"
+                              [name]="formField.field"
+                              (blur)="onFocusOutEvent(formField)"
+                            />
+                            <span *ngIf="!formField?.isValid" class="error">{{
+                              formField.errorMessage
+                            }}</span>
+                            <span *ngIf="formField.required"> * </span>
+                          </div>
+                        </span>
+
+                        <!-- Checkbox -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-0 p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.CHECKBOX"
+                          >
+                            <label
+                              *ngIf="!formField.label.labelControl"
+                              [class]="
+                                formField.label.onClick ? 'custom-link' : ''
+                              "
+                              [title]="
+                                formField.label &&
+                                typeOf(formField.label) === 'object'
+                                  ? formField.label.name
+                                  : formField.label
+                              "
+                              (click)="
+                                formField.label.onClick &&
+                                  formField.label.onClick()
+                              "
+                              >{{
+                                formField.label &&
+                                typeOf(formField.label) === 'object'
+                                  ? formField.label.name
+                                  : formField.label
+                              }}
+                              <span *ngIf="formField.requiredField">*</span>
+                            </label>
+                            <p-checkbox
+                              class="p-d-flex p-ai-center"
+                              [binary]="true"
+                              [name]="formField.field"
+                              [(ngModel)]="formField.value"
+                              [disabled]="formField.disabled"
+                              (onChange)="onFocusOutEvent(formField)"
+                            >
+                            </p-checkbox>
+                            <span *ngIf="!formField?.isValid" class="error">{{
+                              formField.errorMessage
+                            }}</span>
+                          </div>
+                        </span>
+
+                        <!-- Calendar -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.CALENDAR"
+                          >
+                            <span
+                              [class]="
+                                formField.disabled ? 'disabled-link' : ''
+                              "
+                            >
+                              <label
+                                [class]="
+                                  formField.label.onClick ? 'custom-link' : ''
+                                "
+                                [title]="
+                                  formField.label.labelControl
+                                    ? ''
+                                    : formField.label.onClick
+                                    ? formField.label.name
+                                    : formField.label
+                                "
+                                (click)="
+                                  formField.label.onClick &&
+                                    formField.label.onClick()
+                                "
+                              >
+                                {{
+                                  formField.label.labelControl
+                                    ? ''
+                                    : formField.label.onClick
+                                    ? formField.label.name
+                                    : formField.label
+                                }}
+                                <span *ngIf="formField.requiredField">*</span>
+                              </label>
+                            </span>
+                            <p-calendar
+                              [class]="
+                                formField.errorMessage
+                                  ? 'ng-invalid ng-dirty'
+                                  : 'form-control'
+                              "
+                              [showButtonBar]="true"
+                              [(ngModel)]="formField.value"
+                              [name]="formField.field"
+                              [disabled]="formField.disabled"
+                              hourFormat="12"
+                              [showTime]="formField.showTime"
+                              [timeOnly]="formField.timeOnly"
+                              [view]="formField.monthOnly ? 'month' : 'date'"
+                              [dateFormat]="
+                                formField.format
+                                  ? formField.format.type
+                                  : 'mm/dd/yy'
+                              "
+                              (onClose)="onFocusOutEvent(formField)"
+                            >
+                            </p-calendar>
+                            <span *ngIf="!formField?.isValid" class="error">{{
+                              formField.errorMessage
+                            }}</span>
+                          </div>
+                        </span>
+
+                        <!-- Dropdown -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.DROPDOWN"
+                          >
+                            <label
+                              [class]="
+                                formField.label.onClick ? 'custom-link' : ''
+                              "
+                              [title]="
+                                formField.label.labelControl
+                                  ? ''
+                                  : formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              "
+                              (click)="
+                                formField.label.onClick &&
+                                  formField.label.onClick()
+                              "
+                            >
+                              {{
+                                formField.label.labelControl
+                                  ? ''
+                                  : formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              }}
+                              <span
+                                *ngIf="
+                                  formField.requiredField &&
+                                  !formField.label?.labelControl
+                                "
+                                >*</span
+                              >
+                            </label>
+                            <p-dropdown
+                              [class]="
+                                formField.errorMessage
+                                  ? 'ng-invalid ng-dirty'
+                                  : 'form-control'
+                              "
+                              autocomplete="off"
+                              [styleClass]="formField.field"
+                              [placeholder]="formField.value"
+                              [options]="formField.data"
+                              [filter]="formField.allowSearch"
+                              [(ngModel)]="formField.value"
+                              [optionLabel]="formField.optionLabel"
+                              [optionValue]="formField.optionValue"
+                              [name]="formField.field"
+                              (click)="onClickEvent(formField)"
+                              (keyup.Tab)="tabFocusEvent(formField)"
+                              [disabled]="formField.disabled"
+                              (onBlur)="onFocusOutEvent(formField)"
+                              [showClear]="formField.value ? true : false"
+                              (onChange)="onClearValue(formField, $event)"
+                              [autoDisplayFirst]="
+                                formField.value > 0 ? true : false
+                              "
+                            >
+                            </p-dropdown>
+                            <span
+                              *ngIf="!formField?.isValid && !formField.hidden"
+                              class="error"
+                              >{{ formField.errorMessage }}</span
+                            >
+                          </div>
+                        </span>
+
+                        <!-- AutoComplete Search -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.AUTOCOMPLETE"
+                          >
+                            <label
+                              [class]="
+                                formField.label.onClick ? 'custom-link' : ''
+                              "
+                              [title]="
+                                formField.label.labelControl
+                                  ? ''
+                                  : formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              "
+                              (click)="
+                                formField.label.onClick &&
+                                  formField.label.onClick()
+                              "
+                            >
+                              {{
+                                formField.label.labelControl
+                                  ? ''
+                                  : formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              }}
+                              <span *ngIf="formField.requiredField">*</span>
+                            </label>
+                            <span class="p-fluid">
+                              <p-autoComplete
+                                [class]="
+                                  formField.errorMessage
+                                    ? 'ng-invalid ng-dirty'
+                                    : 'form-control'
+                                "
+                                [suggestions]="formField.data"
+                                [(ngModel)]="formField.value"
+                                (completeMethod)="autoSearch($event, formField)"
+                                [field]="formField.displayField"
+                                [name]="formField.label"
+                                [multiple]="true"
+                                (onBlur)="onFocusOutEvent(formField)"
+                                [disabled]="formField.disabled"
+                              >
+                              </p-autoComplete>
+                            </span>
+                          </div>
+                        </span>
+
+                        <!-- Multi-select -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.MULTISELECT"
+                          >
+                            <label
+                              [class]="
+                                formField.label.onClick ? 'custom-link' : ''
+                              "
+                              [title]="
+                                formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              "
+                              (click)="
+                                formField.label.onClick &&
+                                  formField.label.onClick()
+                              "
+                            >
+                              {{
+                                formField.label.onClick
+                                  ? formField.label.name
+                                  : formField.label
+                              }}
+                              <span *ngIf="formField.requiredField">*</span>
+                            </label>
+                            <p-multiSelect
+                              [class]="
+                                formField.errorMessage
+                                  ? 'ng-invalid ng-dirty'
+                                  : 'form-control'
+                              "
+                              [(ngModel)]="formField.value"
+                              [options]="formField.data"
+                              optionLabel="label"
+                              optionValue="value"
+                              [appendTo]="'body'"
+                              [name]="formField.field"
+                              (click)="
+                                formField.onClick ? formField.onClick() : ''
+                              "
+                              [disabled]="formField.disabled"
+                              (blur)="onFocusOutEvent(formField)"
+                            >
+                            </p-multiSelect>
+                          </div>
+                        </span>
+
+                        <!-- Hyperlink-->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            [class]="
+                              formField.disabled
+                                ? 'disabled-link'
+                                : 'link-label custom-link'
+                            "
+                            [title]="formField.label"
+                            *ngSwitchCase="dynamicCase.HYPERLINK"
+                          >
+                            <div
+                              *ngIf="
+                                formField.hyperlink &&
+                                formField.hyperlink.component
+                              "
+                              (click)="hyperlinkDialog(formField)"
+                            >
+                              {{ formField.label }}
+                            </div>
+                            <div
+                              [class]="
+                                formField.disabled
+                                  ? 'disabled-link'
+                                  : 'link-label custom-link'
+                              "
+                              *ngIf="
+                                formField.hyperlink &&
+                                formField.hyperlink.target !== '_iframe' &&
+                                !formField.hyperlink.component
+                              "
+                            >
+                              <a
+                                class="pl-2"
+                                tabindex="-1"
+                                [href]="formField.hyperlink?.link"
+                                [target]="formField.hyperlink?.target"
+                                (click)="handleClickEvent(formField)"
+                                [title]="formField.label"
+                              >
+                                {{ formField.label }}
+                                <span *ngIf="formField.requiredField">*</span>
+                              </a>
+                            </div>
+                            <div
+                              *ngIf="
+                                formField.hyperlink &&
+                                formField.hyperlink.target === '_iframe' &&
+                                !formField.hyperlink.component
+                              "
+                            >
+                              <a
+                                class="pl-2"
+                                tabindex="-1"
+                                (click)="loadIFrame(formField)"
+                              >
+                                {{ formField.label }}
+                                <span *ngIf="formField.requiredField">*</span>
+                              </a>
+                            </div>
+                          </div>
+                        </span>
+
+                        <!-- Lookup Control Field -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.LOOKUP_INPUT"
+                          >
+                            <span
+                              [class]="
+                                formField.disabled ? 'disabled-link' : ''
+                              "
+                            >
+                              <label
+                                *ngIf="!formField.label.labelControl"
+                                [class]="
+                                  formField.label.onClick ? 'custom-link' : ''
+                                "
+                                (click)="
+                                  formField.label.onClick &&
+                                    formField.label.onClick()
+                                "
+                                [title]="
+                                  typeOf(formField.label) === 'object'
+                                    ? formField.label.name
+                                    : formField.label
+                                "
+                              >
+                                {{
+                                  typeOf(formField.label) === 'object'
+                                    ? formField.label.name
+                                    : formField.label
+                                }}
+                                <span *ngIf="formField.requiredField">*</span>
+                              </label>
+                            </span>
+                            <input
+                              [class]="
+                                formField.errorMessage
+                                  ? 'ng-invalid ng-dirty'
+                                  : 'form-control'
+                              "
+                              [id]="formField.field"
+                              type="text"
+                              pInputText
+                              autocomplete="off"
+                              [(ngModel)]="
+                                formField.value &&
+                                typeOf(formField.value) === 'object'
+                                  ? formField.value.text
+                                  : formField.value
+                              "
+                              [name]="formField.field"
+                              (click)="selectLookupField(formField)"
+                              (keyup.Tab)="selectLookupField(formField)"
+                              [disabled]="formField.disabled"
+                              (blur)="onFocusOutEvent(formField)"
+                              readonly
+                              (keydown)="$event.preventDefault()"
+                            />
+                            <span *ngIf="!formField?.isValid" class="error">{{
+                              formField.errorMessage
+                            }}</span>
+                          </div>
+                        </span>
+
+                        <!-- File Upload Field -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.FILE_UPLOAD"
+                          >
+                            <span
+                              [class]="
+                                formField.disabled ? 'disabled-link' : ''
+                              "
+                            >
+                              <label [title]="formField.label">
+                                {{ formField.label }}
+                                <span *ngIf="formField.requiredField">*</span>
+                              </label>
+                            </span>
+                            <app-file-upload
+                              [allowMultiple]="formField.selectMultipleFiles"
+                              [acceptFileTypes]="formField.SetfileTypes"
+                              [fields]="formField"
+                              (fileUrl)="fileUrl($event)"
+                            ></app-file-upload>
+                            <span *ngIf="showfileUploadError" class="error">{{
+                              formField.errorMessage
+                            }}</span>
+                          </div>
+                        </span>
+
+                        <!-- Card field -->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            class="p-d-flex p-flex-column"
+                            *ngSwitchCase="dynamicCase.CARD"
+                          >
+                            <span
+                              [class]="
+                                formField.disabled ? 'disabled-link' : ''
+                              "
+                            >
+                              <label [title]="formField.label">
+                                {{ formField.label }}
+                                <span *ngIf="formField.requiredField">*</span>
+                              </label>
+                            </span>
+
+                            <app-card
+                              [card]="formField.card"
+                              (selectedCard)="selectedCardClickEvent($event)"
+                            ></app-card>
+
+                            <span *ngIf="showfileUploadError" class="error">{{
+                              formField.errorMessage
+                            }}</span>
+                          </div>
+                        </span>
+
+                        <!-- Note Detail Field -->
+                        <span *ngIf="!formField.hidden">
+                          <div *ngSwitchCase="dynamicCase.NOTE_FIELD">
+                            <div
+                              [class]="
+                                formField.disabled
+                                  ? 'disabled-link'
+                                  : 'link-label custom-link'
+                              "
+                            >
+                              <span
+                                class="pl-2"
+                                (click)="
+                                  !formField.disabled
+                                    ? handleNoteFieldDialog(formField)
+                                    : ''
+                                "
+                                [title]="
+                                  formField.label.labelControl
+                                    ? ''
+                                    : formField.label.onClick
+                                    ? formField.label.name
+                                    : formField.label
+                                "
+                                >{{
+                                  formField.label.labelControl
+                                    ? ''
+                                    : formField.label.onClick
+                                    ? formField.label.name
+                                    : formField.label
+                                }}
+                                <span *ngIf="formField.requiredField">*</span>
+                              </span>
+                            </div>
+                          </div>
+                        </span>
+
+                        <!-- Dynamic Component Container-->
+                        <span *ngIf="!formField.hidden">
+                          <div
+                            id="{{ formSection.name }}-{{ formFieldIndex }}"
+                            #dynamicComponentContainer
+                            *ngSwitchCase="dynamicCase.COMPONENT"
+                          ></div>
+                        </span>
+
+                        <!-- Header component-->
+                        <span *ngIf="!formField.hidden">
+                          <div *ngSwitchCase="dynamicCase.SECTION_HEADER">
+                            <label>
+                              <b> {{ formField.label }} </b>
+                            </label>
+                          </div>
+                        </span>
+
+                        <!-- Add OnClick Button -->
+                        <span *ngIf="!formField.hidden">
+                          <div *ngSwitchCase="dynamicCase.ADD_BUTTON">
+                            <button
+                              pButton
+                              type="button"
+                              [icon]="formField.icon"
+                              [label]="formField.label"
+                              [ngStyle]="{
+                                background: formField.color
+                                  ? formField.color
+                                  : ''
+                              }"
+                              (click)="onClickEvent(formField)"
+                            ></button>
+                          </div>
+                        </span>
+
+                        <!-- Add Input Switch -->
+                        <span *ngIf="!formField.hidden">
+                          <div *ngSwitchCase="dynamicCase.SWITCH">
+                            <div>
+                              <label [title]="formField.label">
+                                {{ formField.label }}
+                              </label>
+                            </div>
+                            <p-inputSwitch
+                              [name]="
+                                formField.label ? formField.label : 'switch'
+                              "
+                              [(ngModel)]="formField.value"
+                              [disabled]="formField.disabled"
+                              (click)="onClickEvent(formField)"
+                            ></p-inputSwitch>
+                          </div>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </p-accordionTab>
+              </p-accordion>
+            </span>
+          </div>
+        </span>
+      </div>
+    </span>
+
+    <!-- save and close buttons -->
+    <div
+      class="p-col-12 p-d-flex p-jc-end"
+      [ngClass]="{ sticky: stickyActions }"
+    >
+      <!-- save button -->
+      <button
+        *ngIf="!hideSaveButton"
+        [disabled]="isFormDisabled"
+        pButton
+        type="button"
+        icon="pi pi-check"
+        label="Save"
+        class="p-button-success"
+        (click)="onSaveForm()"
+      ></button>
+
+      <!-- close button -->
+      <button
+        *ngIf="!hideCancelButton"
+        [disabled]="isFormDisabled"
+        (click)="onCancelForm()"
+        pButton
+        type="button"
+        icon="pi pi-times"
+        label="Cancel"
+        class="p-button-danger p-ml-3"
+      ></button>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,43 @@
+@import url('../shared/style.scss');
+.header-list {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0px;
+  padding: 0px 10px;
+  &-item {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px 5px;
+    text-align: center;
+    position: relative;
+
+    &::after {
+      content: '';
+      border-right: 1px solid rgba(0, 0, 0, 0.2);
+      width: 0px;
+      height: 20px;
+      display: block;
+      position: absolute;
+      top: calc(50% - 10px);
+      right: 0;
+    }
+    &:last-child {
+      &::after {
+        display: none;
+      }
+    }
+    b {
+      margin-right: 15px;
+    }
+  }
+}
+.card.p-sticky {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  background: #eee;
+}

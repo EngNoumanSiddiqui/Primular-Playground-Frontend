@@ -1,0 +1,10 @@
+<!-- add Caption on DisplayImage Component -->
+<div class="caption-form">
+  <app-dynamic-form
+    *ngIf="dynamicForm"
+    [form]="dynamicForm"
+    (saveForm)="saveForm($event)"
+    (cancelForm)="cancelForm($event)"
+  >
+  </app-dynamic-form>
+</div>

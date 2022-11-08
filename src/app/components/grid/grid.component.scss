@@ -1,0 +1,54 @@
+.action-btn {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+:host ::ng-deep {
+  .p-column-filter-clear-button {
+    display: none;
+  }
+
+  .hide-table-filter .pi-filter:before {
+    display: none;
+  }
+
+  .horizontal-scroll .p-datatable {
+    position: relative;
+    width: calc(100vw - 263px);
+    overflow: auto;
+    height: calc(100vh - 134px);
+
+    th,
+    td {
+      min-width: 150px;
+    }
+  }
+  .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0 1rem !important;
+  }
+  .p-datatable .p-datatable-tbody > tr > td span {
+    vertical-align: middle;
+  }
+}
+
+.custom-link {
+  color: rgb(32, 93, 207);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.setActionColumnWidth {
+  display: flex;
+}
+
+.noWrap td span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: inline-block;
+}
+
+.highlighted-row {
+  background-color: #dee2e6 !important;
+}

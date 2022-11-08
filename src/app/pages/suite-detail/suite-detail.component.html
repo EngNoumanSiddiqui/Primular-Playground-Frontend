@@ -1,0 +1,74 @@
+<se-header [headers]="headers"></se-header>
+
+<!-- <app-dynamic-form
+  [form]="dynamicForm"
+  (saveForm)="saveForm($event)"
+  (cancelForm)="cancelForm($event)"
+></app-dynamic-form> -->
+<div class="p-d-flex sidebar-wrapper">
+  <!-- right side bar -->
+  <se-sidebar [sidebarItems]="rightSidebarItems"></se-sidebar>
+
+  <div class="center-content">
+    <span class="scrollSuiteInfo">
+      <h1>Suite Info</h1>
+      <se-form
+        [form]="dynamicForm"
+        (saveForm)="saveForm($event)"
+        (cancelForm)="cancelForm($event)"
+      ></se-form>
+    </span>
+    <span class="scrollLinks">
+      <h1>Links</h1>
+      <div class="wrapper p-col">
+        <nav>
+          <ul>
+            <li class="nav-item p-px-1" routerLinkActive="active">
+              <b>View Pics: </b>
+            </li>
+            <li class="nav-item p-px-1" routerLinkActive="active">
+              <a class="custom-link" [href]="unitURL" target="_blank">Unit</a>
+            </li>
+            <li class="nav-item p-px-1" routerLinkActive="active">
+              <a class="custom-link" [href]="buildingURL" target="_blank"
+                >Bldg</a
+              >
+            </li>
+            <li class="nav-item p-px-1" routerLinkActive="active">
+              <a
+                class="custom-link"
+                [href]="rateCalculatorURL"
+                target="popup"
+                onclick="window.open(rateCalculatorURL,'popup','width=600,height=600'); return false;"
+                >Rate Calculator</a
+              >
+            </li>
+            <li class="nav-item p-px-1" routerLinkActive="active">
+              <a
+                class="custom-link"
+                [href]="taxURL"
+                target="popup"
+                onclick="window.open(taxURL,'popup','width=600,height=600'); return false;"
+                >Tax</a
+              >
+            </li>
+          </ul>
+        </nav>
+        <router-outlet></router-outlet>
+      </div>
+    </span>
+    <span class="scrollHolds">
+      <h1>Suite Holds</h1>
+      <se-grid
+        [rows]="holds"
+        [columns]="columns"
+        [allowColumnToggle]="false"
+        [useServerSideEvents]="true"
+        [pagination]="false"
+        [defaultRows]="10"
+        [showCurrentPageReport]="true"
+        (onServerSideEventChange)="handleServerSideEventChange($event)"
+      ></se-grid>
+    </span>
+  </div>
+</div>

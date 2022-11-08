@@ -1,0 +1,35 @@
+<div class="wrapper" *ngIf="hiddenPanelMenu">
+  <div
+    *ngIf="!isMenubarHidden"
+    class="p-p-0 sidebar"
+    [style]="{ backgroundColor: menuBackColor }"
+    [ngClass]="toggleMenu ? 'hide-nav' : ''"
+  >
+    <div class="p-d-flex p-ai-center toggle-btn">
+      <p-avatar
+        pBadge
+        (click)="clickEvent()"
+        icon="pi pi-user"
+        size="xlarge"
+        shape="circle"
+        class="p-pr-3"
+        [title]="toolTip"
+      ></p-avatar>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        <i
+          class="pi pi-fw toggle-icon"
+          [ngClass]="toggleMenu ? 'pi-chevron-right' : 'pi-chevron-left'"
+        ></i>
+
+        <span>{{ menuTitle }}</span>
+      </button>
+    </div>
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-light p-p-0 grow-1"
+      [ngClass]="toggleMenu ? 'hide-nav' : ''"
+    >
+      <p-panelMenu [model]="menuBarItems" class="menuSidebar"></p-panelMenu>
+    </nav>
+    <div class="nav-footer p-m-2" [innerHtml]="menuFooter"></div>
+  </div>
+</div>

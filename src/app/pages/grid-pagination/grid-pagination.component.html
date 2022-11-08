@@ -1,0 +1,20 @@
+<div class="center-content">
+  <h1>Grid Component with pagination</h1>
+  <app-grid
+    [rows]="users"
+    [columns]="lookUpColumns"
+    [setPaginationLength]="[25, 50, 75, { showAll: 'All' }]"
+    [totalRecords]="totalRecords"
+    [pagination]="true"
+    [defaultRows]="25"
+    [lookupFilters]="true"
+    [allowColumnToggle]="true"
+    [showCurrentPageReport]="true"
+    [useServerSideEvents]="true"
+    (onRowClick)="handleRowClick($event)"
+    (onSortChange)="handleSortChange($event)"
+    (onFilterChange)="handleFilterChange($event)"
+    (onPageChange)="handleServerSideEventPagination($event)"
+    (onServerSideEventChange)="handleServerSideEventChange($event)"
+  ></app-grid>
+</div>

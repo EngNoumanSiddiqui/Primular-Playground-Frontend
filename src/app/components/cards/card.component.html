@@ -1,0 +1,74 @@
+<!-- Display Files Card -->
+<p-confirmDialog key="handlecolumnActions"></p-confirmDialog>
+<div
+  cdkDropList
+  cdkDropListOrientation="horizontal"
+  class="example-list"
+  (cdkDropListDropped)="dragAndDrop($event)"
+>
+  <div
+    class="p-d-flex cards-wrapper"
+    [ngStyle]="{ width: width, height: height }"
+    *ngIf="data"
+    [class]="card && card.class ? card.class : ''"
+  >
+    <div
+      cdkDrag
+      class="example-box p-d-flex p-flex-column cards-wrapper"
+      [class]="
+        fileProp && fileProp.width && fileProp.width.length > 0
+          ? 'p-col-' + fileProp.width
+          : 'p-col-3'
+      "
+      *ngFor="let file of data; let i = index"
+      (click)="onClickEvent(file, i)"
+      [ngClass]="file.selectedCard ? file.selectedCard : ''"
+    >
+      <div class="header-icons">
+        <button
+          pButton
+          type="button"
+          icon="pi pi-trash"
+          (click)="deleteImage(file)"
+          class="p-button-rounded p-button-text"
+          *ngIf="!showFiles && this.card.allowDelete"
+        ></button>
+      </div>
+      <!-- start cards image functionality -->
+      <app-file
+        *ngIf="showFiles"
+        [url]="file.blobfileurl"
+        [type]="file.fileextension"
+        [caption]="file.filecaption"
+        [height]="fileProp?.height"
+        [allowDownloadFile]="fileProp?.allowDownloadFile"
+        [allowEditableCaption]="fileProp?.allowEditableCaption"
+        [allowDeleteFile]="fileProp?.allowDeleteFile"
+        [name]="file.blobfileurl"
+        [id]="file.fileextension"
+        (onDeleteEvent)="deleteImage($event)"
+        (onSaveEvent)="saveCaption($event)"
+      ></app-file>
+      <!-- End cards image functionality -->
+
+      <!-- start form functionality in card -->
+      <app-dynamic-form
+        class="form-content"
+        [form]="file.dynamicform"
+        [hideSaveButton]="true"
+        [hideCancelButton]="true"
+      ></app-dynamic-form>
+      <!-- End form functionality in card -->
+    </div>
+  </div>
+
+  <!-- in case of form and data is empty or null -->
+  <div *ngIf="dynamicForm && (!data || data.length == 0)">
+    <app-dynamic-form
+      cdkDrag
+      [form]="dynamicForm"
+      [hideSaveButton]="true"
+      [hideCancelButton]="true"
+    ></app-dynamic-form>
+  </div>
+</div>

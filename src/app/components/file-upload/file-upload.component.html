@@ -1,0 +1,10 @@
+<!-- file Upload Component-->
+<input
+  pInputText
+  #fileInput
+  type="file"
+  id="file"
+  [accept]="acceptFileTypes"
+  [multiple]="allowMultiple"
+  (change)="uploadFile(fileInput.files)"
+/>

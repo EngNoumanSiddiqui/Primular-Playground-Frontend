@@ -1,0 +1,21 @@
+.sidebar-wrapper {
+  position: relative;
+  position: sticky;
+  top: 0;
+}
+
+:host {
+  ::ng-deep {
+    body {
+      overflow: hidden !important;
+    }
+    .center-content {
+      height: calc(100vh - 104px);
+    }
+    .active-icon a:first-child,
+    .active-icon a:hover:first-child,
+    .p-panelmenu-header-link:hover {
+      color: #c91a1a !important;
+    }
+  }
+}

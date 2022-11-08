@@ -1,0 +1,31 @@
+<p-confirmDialog
+  [style]="{ width: '50vw' }"
+  [baseZIndex]="10000"
+></p-confirmDialog>
+<p-button (click)="confirm()" icon="pi pi-check" label="Confirm"></p-button>
+<p-messages [value]="message"></p-messages>
+
+<div class="center-content grid-table">
+  <h1>Grid Component lookUp</h1>
+  <app-grid
+    [rows]="users"
+    [columns]="lookUpColumns"
+    [allowExportToExcel]="true"
+    [lookupFilters]="true"
+    [useServerSideEvents]="true"
+    [allowColumnToggle]="true"
+    (onRowClick)="handleRowClick($event)"
+    (onSortChange)="handleSortChange($event)"
+    (onFilterChange)="handleFilterChange($event)"
+    (onServerSideEventChange)="handleServerSideEventChange($event)"
+    [dataKey]="'id'"
+    [useInlineCRUD]="true"
+    (onRowDelete)="deleteRow($event)"
+    (onRowUpdate)="updateRow($event)"
+    (onGridRowAdd)="AddNewRow($event)"
+    (onRowAdd)="addInlineRow($event)"
+    [hideFilter]="false"
+    [hideFilterOptions]="true"
+    (onGridRowEdit)="onGridRowEdit($event)"
+  ></app-grid>
+</div>

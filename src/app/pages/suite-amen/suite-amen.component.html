@@ -1,0 +1,38 @@
+<se-form
+  [form]="dynamicForm"
+  (saveForm)="saveForm($event)"
+  (cancelForm)="cancelForm($event)"
+></se-form>
+
+<div class="wrapper p-col">
+  <nav>
+    <ul>
+      <li class="nav-item p-px-1" routerLinkActive="active">
+        <b>View Pics</b>
+      </li>
+      <li class="nav-item p-px-1" routerLinkActive="active">
+        <a [href]="unitURL" target="_blank">Unit</a>
+      </li>
+      <li class="nav-item p-px-1" routerLinkActive="active">
+        <a [href]="buildingURL" target="_blank">Bldg</a>
+      </li>
+      <li class="nav-item p-px-1" routerLinkActive="active">
+        <a
+          [href]="rateCalculatorURL"
+          target="popup"
+          onclick="window.open(rateCalculatorURL,'popup','width=600,height=600'); return false;"
+          >Rate Calculator</a
+        >
+      </li>
+      <li class="nav-item p-px-1" routerLinkActive="active">
+        <a
+          [href]="taxURL"
+          target="popup"
+          onclick="window.open(taxURL,'popup','width=600,height=600'); return false;"
+          >Tax</a
+        >
+      </li>
+    </ul>
+  </nav>
+  <router-outlet></router-outlet>
+</div>

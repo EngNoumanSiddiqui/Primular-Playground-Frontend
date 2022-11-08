@@ -1,0 +1,908 @@
+<p-confirmDialog
+  [style]="{ width: '50vw' }"
+  *ngIf="useInlineCRUD"
+  key="handleInlineCRUD"
+></p-confirmDialog>
+<p-confirmDialog
+  [style]="{ width: '50vw' }"
+  *ngIf="columnActions.length > 0"
+  key="handlecolumnActions"
+></p-confirmDialog>
+<p-table
+  *ngIf="!isGridHidden"
+  id="my-table"
+  [value]="rowsData"
+  [columns]="selectedColumns"
+  sortMode="multiple"
+  [lazy]="useServerSideEvents"
+  [paginator]="pagination"
+  [class]="pagination || !rowsData.length ? 'pagination' : ''"
+  [rows]="defaultRows"
+  [totalRecords]="totalRecords"
+  [rowsPerPageOptions]="setPaginationLength"
+  [showCurrentPageReport]="showCurrentPageReport"
+  currentPageReportTemplate="Showing {first} to {last} of {{
+    totalRecords
+  }} entries"
+  [loading]="loading"
+  (onSort)="handleSortChange($event)"
+  (onFilter)="handleFilterChange($event)"
+  (onLazyLoad)="handleServerSideEvents($event)"
+  (onPage)="handleServerSidePagination($event)"
+  #dt
+  [dataKey]="dataKey"
+  [(selection)]="selectedRows"
+  [scrollable]="scrollable"
+  [scrollHeight]="scrollHeight"
+  editMode="row"
+  [editingRowKeys]="editingRowKeys"
+  [autoLayout]="true"
+  [rowHover]="rowHover"
+  [ngClass]="{ 'horizontal-scroll': horizontalScroll === true ? true : false }"
+>
+  <!-- header columns on Grid -->
+  <ng-template
+    pTemplate="caption"
+    *ngIf="
+      allowColumnToggle ||
+      rowActions.length > 0 ||
+      useInlineCRUD ||
+      allowExportToExcel ||
+      allowExportToPdf
+    "
+  >
+    <!-- header Button for multiSelect on Grid -->
+    <span *ngIf="allowColumnToggle">
+      <p-multiSelect
+        [showToggleAll]="false"
+        [options]="columns"
+        [(ngModel)]="selectedColumns"
+        optionLabel="header"
+        selectedItemsLabel="{0} columns selected"
+        [style]="{ minWidth: '200px' }"
+        placeholder="Choose Columns"
+      >
+      </p-multiSelect>
+    </span>
+
+    <!-- header Button for Action on Grid -->
+    <div
+      *ngIf="rowActions.length > 0 && rowActions.length > 0"
+      class="p-d-flex p-jc-end"
+    >
+      <span *ngFor="let rowAction of rowActions">
+        <button
+          pButton
+          type="button"
+          [label]="rowAction.title"
+          [class]="rowAction.class"
+          (click)="rowAction.onClick(selectedRows)"
+        ></button>
+      </span>
+    </div>
+
+    <!-- header Button for Adding new Row on Grid -->
+    <button
+      *ngIf="useInlineCRUD && addRowPermission"
+      pButton
+      type="button"
+      icon="pi pi-plus"
+      class="ui-button-info p-mr-2"
+      [label]="'Add'"
+      pAddRow
+      [table]="dt"
+      [newRow]="newGridRow"
+      [id]="dataKey"
+      pTooltip="Add New Row"
+      tooltipPosition="bottom"
+      (click)="addNewRow(newGridRow, true)"
+      pRipple
+    ></button>
+
+    <!-- header Button for Excel File on Grid -->
+    <button
+      *ngIf="allowExportToExcel"
+      type="button"
+      pButton
+      icon="pi pi-file-excel"
+      (click)="exportExcel()"
+      class="p-button-success p-mr-2"
+      pTooltip="Export to Excel"
+      tooltipPosition="bottom"
+      pRipple
+    ></button>
+
+    <!-- header Button for PDF File on Grid -->
+    <button
+      *ngIf="allowExportToPdf"
+      type="button"
+      pButton
+      icon="pi pi-file-pdf"
+      (click)="exportPdf()"
+      class="p-button-warning p-mr-2"
+      pTooltip="Export to Pdf"
+      tooltipPosition="bottom"
+      pRipple
+    ></button>
+  </ng-template>
+
+  <!-- header columns on Grid -->
+  <ng-template pTemplate="header" let-cols>
+    <tr>
+      <th *ngIf="allowSelection" [ngStyle]="{ width: selectionColumnWidth }">
+        Select
+      </th>
+      <th
+        *ngFor="let column of cols"
+        [pSortableColumn]="column.field"
+        [style]="column.style"
+        [pSortableColumnDisabled]="column.sorting === false"
+      >
+        {{ column.header }}
+        <p-sortIcon
+          *ngIf="column.sorting !== false"
+          [field]="column.field"
+        ></p-sortIcon>
+      </th>
+      <th
+        *ngIf="
+          columnActions.length > 0 ||
+          (useInlineCRUD && (deleteRowPermission || editRowPermission))
+        "
+      >
+        Actions
+      </th>
+    </tr>
+    <tr *ngIf="filtering && !hideFilter">
+      <th *ngIf="allowSelection">
+        <p-tableHeaderCheckbox
+          *ngIf="selectionType === 'multiple'"
+        ></p-tableHeaderCheckbox>
+      </th>
+      <th
+        *ngFor="let column of cols"
+        [ngSwitch]="column?.filter?.type"
+        [style]="column.style"
+        [class]="hideFilterOptions ? 'hide-table-filter' : ''"
+      >
+        <span *ngIf="column.filtering !== false">
+          <!-- Text input on Header For Filter-->
+          <p-columnFilter
+            [type]="'text'"
+            [field]="column.field"
+            *ngSwitchCase="'input'"
+          >
+            <ng-template
+              pTemplate="filter"
+              let-value
+              let-filter="filterCallback"
+            >
+              <input
+                type="text"
+                [(ngModel)]="column.value"
+                (keyup.enter)="applyEnterEvent(filter, $event, column)"
+                (blur)="setFilterFocusOut(column)"
+                (keydown)="backspaceEvent($event, column)"
+                (keyup)="removingFilters($event, column)"
+                pInputText
+              />
+            </ng-template>
+          </p-columnFilter>
+
+          <!-- lookup input on Header For Filter-->
+          <p-columnFilter
+            [type]="'text'"
+            [field]="column.field"
+            *ngSwitchCase="'lookup_input'"
+          >
+            <ng-template
+              pTemplate="filter"
+              let-value
+              let-filter="filterCallback"
+            >
+              <input
+                id="lookUp_filter"
+                type="text"
+                [(ngModel)]="column.value"
+                [disabled]="column.disabled"
+                (click)="setFilterLookup(column)"
+                (blur)="setFilterFocusOut(column)"
+                (keydown)="backspaceEvent($event, column)"
+                (keyup.enter)="applyEnterEvent(filter, $event, column)"
+                (keyup)="removingFilters($event, column)"
+                pInputText
+              />
+            </ng-template>
+          </p-columnFilter>
+
+          <!-- checkbox on Header For Filter-->
+          <p-columnFilter
+            type="boolean"
+            [field]="column.field"
+            *ngSwitchCase="'checkbox'"
+          >
+            <ng-template
+              pTemplate="filter"
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-checkbox
+                [binary]="true"
+                [(ngModel)]="column.value"
+                (keyup.enter)="applyEnterEvent(filter, $event, column)"
+                (blur)="setFilterFocusOut(column)"
+                (keydown)="backspaceEvent($event, column)"
+              >
+              </p-checkbox>
+            </ng-template>
+          </p-columnFilter>
+
+          <!-- multiSelect on Header For Filter-->
+          <p-columnFilter
+            [field]="column.field"
+            matchMode="in"
+            [showMenu]="false"
+            *ngSwitchCase="'multi-select'"
+          >
+            <ng-template
+              pTemplate="filter"
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-multiSelect
+                [ngModel]="value"
+                [options]="column.filter.data || []"
+                (onChange)="filter($event.value)"
+                (blur)="setFilterFocusOut(column)"
+                (keydown)="backspaceEvent($event, column)"
+                placeholder="Any"
+                optionLabel="label"
+              >
+              </p-multiSelect>
+            </ng-template>
+          </p-columnFilter>
+
+          <!-- dropdown on Header For Filter-->
+          <p-columnFilter
+            [field]="column.field"
+            matchMode="in"
+            [showMenu]="false"
+            *ngSwitchCase="'dropdown'"
+          >
+            <ng-template
+              pTemplate="filter"
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-dropdown
+                [showClear]="true"
+                [placeholder]="'Select'"
+                [(ngModel)]="column.value"
+                [options]="column.filter.data || []"
+                (onChange)="filter($event.value)"
+              ></p-dropdown>
+            </ng-template>
+          </p-columnFilter>
+
+          <!-- calendar on Header For Filter-->
+          <p-columnFilter
+            [field]="column.field"
+            matchMode="in"
+            [showMenu]="false"
+            *ngSwitchCase="'calendar'"
+          >
+            <ng-template
+              pTemplate="filter"
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-calendar
+                [placeholder]="'Select-Date'"
+                [(ngModel)]="column.value"
+                (keyup.enter)="applyEnterEvent(filter, $event, column)"
+                appendTo="body"
+                [showButtonBar]="true"
+                (onClose)="setFilterFocusOut(column)"
+                (keydown)="backspaceEvent($event, column)"
+                (onClearClick)="filter(null)"
+              >
+              </p-calendar>
+            </ng-template>
+          </p-columnFilter>
+
+          <!-- Default Filter For Header  -->
+          <p-columnFilter
+            [type]="
+              column.type && column.type !== 'link' ? column.type : 'text'
+            "
+            [field]="column.field"
+            display="menu"
+            *ngSwitchDefault
+          >
+          </p-columnFilter>
+        </span>
+      </th>
+      <th
+        *ngIf="
+          columnActions.length > 0 ||
+          (useInlineCRUD && (deleteRowPermission || editRowPermission))
+        "
+      ></th>
+    </tr>
+  </ng-template>
+
+  <!-- Body columns on Grid -->
+  <ng-template pTemplate="body" let-row let-editing="editing" let-ri="rowIndex">
+    <tr
+      [class]="wordWrap ? '' : 'noWrap'"
+      [ngClass]="row.highlightrow ? 'highlighted-row' : ''"
+      (click)="!editing && handleRowClick(row)"
+      [pEditableRow]="row"
+      #gridRow
+      [id]="row[dataKey]"
+    >
+      <td *ngIf="allowSelection" [ngStyle]="{ width: selectionColumnWidth }">
+        <p-tableRadioButton
+          [value]="row"
+          *ngIf="selectionType === 'single'"
+        ></p-tableRadioButton>
+        <p-tableCheckbox
+          [value]="row"
+          *ngIf="selectionType === 'multiple'"
+        ></p-tableCheckbox>
+      </td>
+      <td
+        *ngFor="let column of selectedColumns"
+        [ngSwitch]="column.type"
+        [style]="column.style"
+      >
+        <!-- Boolean column on Grid -->
+        <span *ngSwitchCase="'boolean'">
+          <td *ngIf="!editing">
+            <p-checkbox
+              [disabled]="true"
+              [binary]="true"
+              (click)="selectedRow(row)"
+              (blur)="onFocusOutEvent(column, row)"
+              [(ngModel)]="
+                row[column.field] &&
+                (row[column.field].toString() === '1' ||
+                  row[column.field].toString().toLowerCase() === 'true' ||
+                  row[column.field].toString().toLowerCase() === 'y')
+                  ? checked
+                  : unChecked
+              "
+            >
+            </p-checkbox>
+          </td>
+          <td *ngIf="editing">
+            <span *ngSwitchCase="'boolean'">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <p-checkbox
+                    [value]="
+                      row[column.field] &&
+                      (row[column.field].toString() === '1' ||
+                        row[column.field].toString().toLowerCase() === 'true' ||
+                        row[column.field].toString().toLowerCase() === 'y')
+                        ? editModeChecked
+                        : editModeunCkecked
+                    "
+                    [disabled]="column.disabled"
+                    [binary]="true"
+                    [(ngModel)]="row[column.field]"
+                    (blur)="onFocusOutEvent(column, row)"
+                  ></p-checkbox>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{ row[column.field] }}
+                </ng-template>
+              </p-cellEditor>
+            </span>
+          </td>
+        </span>
+
+        <!-- link column on Grid -->
+        <span *ngSwitchCase="'link'">
+          <!-- link column for HyperLink Case -->
+          <span *ngIf="column.allowSave === false">
+            <span
+              *ngIf="column.target !== '_self'"
+              [title]="
+                row[column.field + '_obj'] &&
+                row[column.field + '_obj'].displayText === null
+                  ? ''
+                  : row[column.field + '_obj']?.displayText
+                  ? row[column.field + '_obj'].displayText
+                  : column.displayText
+                  ? column.displayText
+                  : row[column.field]
+              "
+            >
+              <a [href]="row[column.field + '_obj']?.hyperlink" target="_blank">
+                {{
+                  row[column.field + '_obj'] &&
+                  row[column.field + '_obj'].displayText === null
+                    ? ''
+                    : row[column.field + '_obj']?.displayText
+                    ? row[column.field + '_obj'].displayText
+                    : column.displayText
+                    ? column.displayText
+                    : row[column.field]
+                }}
+              </a>
+            </span>
+            <span
+              *ngIf="column.target === '_self'"
+              [title]="
+                row[column.field + '_obj'] &&
+                row[column.field + '_obj'].displayText === null
+                  ? ''
+                  : row[column.field + '_obj']?.displayText
+                  ? row[column.field + '_obj'].displayText
+                  : column.displayText
+                  ? column.displayText
+                  : row[column.field]
+              "
+            >
+              <a [href]="row[column.field + '_obj']?.hyperlink">
+                {{
+                  row[column.field + '_obj'] &&
+                  row[column.field + '_obj'].displayText === null
+                    ? ''
+                    : row[column.field + '_obj']?.displayText
+                    ? row[column.field + '_obj'].displayText
+                    : column.displayText
+                    ? column.displayText
+                    : row[column.field]
+                }}
+              </a>
+            </span>
+          </span>
+          <!-- link column for Edit Case -->
+          <span *ngIf="column.allowSave || column.allowSave === undefined">
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <input
+                  *ngIf="!row.isNew"
+                  pInputText
+                  type="text"
+                  [class]="column.errorMessage ? 'ng-invalid ng-dirty' : ''"
+                  [(ngModel)]="
+                    row[column.field + '_obj'] &&
+                    row[column.field + '_obj'].hyperlink
+                  "
+                  [disabled]="column.disabled"
+                  (blur)="onFocusOutEvent(column, row)"
+                />
+                <input
+                  pInputText
+                  [class]="column.errorMessage ? 'ng-invalid ng-dirty' : ''"
+                  *ngIf="row.isNew"
+                  type="text"
+                  [(ngModel)]="row[column.field]"
+                  [disabled]="column.disabled"
+                  (blur)="onFocusOutEvent(column, row)"
+                />
+              </ng-template>
+              <ng-template pTemplate="output">
+                <span>
+                  <a
+                    [href]="row[column.field + '_obj']?.hyperlink"
+                    target="_blank"
+                  >
+                    {{
+                      row[column.field + '_obj'] &&
+                      row[column.field + '_obj'].displayText === null
+                        ? ''
+                        : row[column.field + '_obj']?.displayText
+                        ? row[column.field + '_obj'].displayText
+                        : column.displayText
+                        ? column.displayText
+                        : row[column.field]
+                    }}
+                  </a>
+                </span>
+              </ng-template>
+            </p-cellEditor>
+          </span>
+        </span>
+
+        <!-- Iframe column on Grid -->
+        <span *ngSwitchCase="'iframe'">
+          <span
+            class="custom-link"
+            (click)="
+              gridIFrame(column, row[column.field + '_obj'].hyperlink, row)
+            "
+            [title]="
+              row[column.field + '_obj'] &&
+              row[column.field + '_obj'].displayText === null
+                ? ''
+                : row[column.field + '_obj']?.displayText
+                ? row[column.field + '_obj'].displayText
+                : column.displayText
+                ? column.displayText
+                : row[column.field]
+            "
+          >
+            {{
+              row[column.field + '_obj'] &&
+              row[column.field + '_obj'].displayText === null
+                ? ''
+                : row[column.field + '_obj']?.displayText
+                ? row[column.field + '_obj'].displayText
+                : column.displayText
+                ? column.displayText
+                : row[column.field]
+            }}
+          </span>
+        </span>
+
+        <!-- dialog column on Grid -->
+        <span *ngSwitchCase="'dialog'">
+          <span
+            class="custom-link"
+            (click)="openGridDialog(column)"
+            *ngIf="!row[column.field + '_secondType']"
+          >
+            <span
+              [title]="
+                row[column.field + '_obj'] &&
+                row[column.field + '_obj'].displayText === null
+                  ? ''
+                  : row[column.field + '_obj']?.displayText
+                  ? row[column.field + '_obj'].displayText
+                  : column.displayText
+                  ? column.displayText
+                  : row[column.field]
+              "
+            >
+              {{
+                row[column.field + '_obj'] &&
+                row[column.field + '_obj'].displayText === null
+                  ? ''
+                  : row[column.field + '_obj']?.displayText
+                  ? row[column.field + '_obj'].displayText
+                  : column.displayText
+                  ? column.displayText
+                  : row[column.field]
+              }}
+            </span>
+          </span>
+          <div
+            *ngIf="row[column.field + '_secondType'] === 'date'"
+            [title]="
+              row[column.field]
+                | date: (column.format ? column.format : 'MM/dd/YY')
+            "
+          >
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <p-calendar
+                  [class]="column.errorMessage ? 'ng-invalid ng-dirty' : ''"
+                  (onClose)="onFocusOutEvent(column, row)"
+                  [appendTo]="'body'"
+                  hourFormat="12"
+                  [showTime]="column.showTime"
+                  [timeOnly]="column.timeOnly"
+                  [(ngModel)]="row[column.field]"
+                  [disabled]="column.disabled"
+                ></p-calendar>
+              </ng-template>
+            </p-cellEditor>
+          </div>
+        </span>
+
+        <!-- lookup Input column on Grid -->
+        <span *ngSwitchCase="'lookup_input'">
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                [class]="column.errorMessage ? 'ng-invalid ng-dirty' : ''"
+                type="text"
+                pInputText
+                [(ngModel)]="
+                  row[column.field] && typeOf(row[column.field]) === 'object'
+                    ? row[column.field].text
+                    : row[column.field]
+                "
+                [name]="row[column.field]"
+                [disabled]="column.disabled"
+                (blur)="onFocusOutEvent(column, row)"
+                (click)="selectLookupField(column, row)"
+              />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ row[column.field] }}
+            </ng-template>
+          </p-cellEditor>
+        </span>
+
+        <span *ngSwitchCase="'numeric'">
+          <!-- Numeric Input column on Grid -->
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                pInputText
+                [class]="column.errorMessage ? 'ng-invalid ng-dirty' : ''"
+                type="number"
+                [(ngModel)]="row[column.field]"
+                [disabled]="column.disabled"
+                (blur)="onFocusOutEvent(column, row)"
+                *ngIf="column.field !== dataKey; else locked_field"
+              />
+              <ng-template #locked_field
+                ><span *ngIf="!row.isNew" [title]="row[column.field]">
+                  {{ row[column.field] }}
+                </span></ng-template
+              >
+            </ng-template>
+            <ng-template pTemplate="output">
+              <span
+                [title]="
+                  row[column.displayField]
+                    ? row[column.displayField]
+                    : row[column.field]
+                "
+              >
+                {{
+                  row[column.displayField]
+                    ? row[column.displayField]
+                    : row[column.field]
+                }}
+              </span>
+            </ng-template>
+          </p-cellEditor>
+        </span>
+
+        <!-- Button column on Grid -->
+        <span [title]="column.value ? column.value : column.icon">
+          <div *ngSwitchCase="'add_button'">
+            <button
+              pButton
+              type="button"
+              [icon]="column.icon"
+              [name]="column.header"
+              [label]="column.value"
+              [ngStyle]="{
+                background: column.color ? column.color : ''
+              }"
+              (click)="onClickButton(column, row)"
+            ></button>
+          </div>
+        </span>
+
+        <!-- Date column on Grid -->
+        <span
+          *ngSwitchCase="'date'"
+          [title]="
+            row[column.field]
+              | date: (column.format ? column.format : 'MM/dd/YY')
+          "
+        >
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <p-calendar
+                [class]="column.errorMessage ? 'ng-invalid ng-dirty' : ''"
+                [appendTo]="'body'"
+                hourFormat="12"
+                [showTime]="column.showTime"
+                [timeOnly]="column.timeOnly"
+                [(ngModel)]="row[column.field]"
+                (onClose)="onFocusOutEvent(column, row)"
+                [disabled]="column.disabled"
+              ></p-calendar>
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{
+                row[column.field]
+                  | date: (column.format ? column.format : 'MM/dd/YY')
+              }}
+            </ng-template>
+          </p-cellEditor>
+        </span>
+        <span *ngSwitchDefault>
+          <span [ngSwitch]="column.type">
+            <!-- Dropdown column on Grid -->
+            <span
+              *ngSwitchCase="'dropdown'"
+              [title]="
+                row[column.displayField]
+                  ? row[column.displayField]
+                  : row[column.field]
+              "
+            >
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <p-dropdown
+                    [class]="column.errorMessage ? 'ng-invalid ng-dirty' : ''"
+                    [options]="
+                      row[column.field + '_data']
+                        ? row[column.field + '_data']
+                        : column.data
+                    "
+                    [(ngModel)]="row[column.field]"
+                    [disabled]="column.disabled"
+                    [placeholder]="row[column.field]"
+                    [showClear]="row[column.field] ? true : false"
+                    [optionLabel]="column.optionLabel"
+                    [optionValue]="column.optionValue"
+                    (blur)="onFocusOutEvent(column, row)"
+                  ></p-dropdown>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{
+                    row[column.displayField]
+                      ? row[column.displayField]
+                      : row[column.field]
+                  }}
+                </ng-template>
+              </p-cellEditor>
+            </span>
+
+            <!-- AutoComplete Search -->
+            <span *ngSwitchCase="'AutoComplete'">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <p-autoComplete
+                    [class]="column.errorMessage ? 'ng-invalid ng-dirty' : ''"
+                    [name]="column.header"
+                    [suggestions]="column.data"
+                    [field]="column.displayField"
+                    [(ngModel)]="column.value"
+                    (completeMethod)="autoSearch($event, column)"
+                    (onBlur)="onFocusOutEvent(column, row)"
+                    [disabled]="column.disabled"
+                    [multiple]="true"
+                  >
+                  </p-autoComplete>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  <span *ngFor="let value of row['displayValue']">
+                    {{ value[column.displayField] }},
+                  </span>
+                </ng-template>
+              </p-cellEditor>
+            </span>
+
+            <span *ngSwitchDefault>
+              <!-- Input column on Grid -->
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <input
+                    pInputText
+                    [class]="column.errorMessage ? 'ng-invalid ng-dirty' : ''"
+                    type="text"
+                    [(ngModel)]="row[column.field]"
+                    [disabled]="column.disabled"
+                    (blur)="onFocusOutEvent(column, row)"
+                    *ngIf="column.field !== dataKey; else locked_field"
+                  />
+                  <ng-template #locked_field
+                    ><span *ngIf="!row.isNew" [title]="row[column.field]">
+                      {{ row[column.field] }}
+                    </span></ng-template
+                  >
+                </ng-template>
+                <ng-template pTemplate="output">
+                  <span
+                    [title]="
+                      row[column.displayField]
+                        ? row[column.displayField]
+                        : row[column.field]
+                    "
+                  >
+                    {{
+                      row[column.displayField]
+                        ? row[column.displayField]
+                        : row[column.field]
+                    }}
+                  </span>
+                </ng-template>
+              </p-cellEditor>
+            </span>
+          </span>
+        </span>
+      </td>
+
+      <!-- Action column on Grid -->
+      <td *ngIf="columnActions.length > 0">
+        <span class="action-btn" *ngFor="let action of columnActions">
+          <i
+            [title]="action.tooltip"
+            [class]="action.icon"
+            (click)="handleActionClick($event, action, row)"
+          ></i>
+        </span>
+      </td>
+      <td *ngIf="useInlineCRUD && (deleteRowPermission || editRowPermission)">
+        <span class="setActionColumnWidth">
+          <!-- onRow Edit Button on Grid -->
+          <button
+            *ngIf="!editing && editRowPermission"
+            pButton
+            pRipple
+            type="button"
+            pInitEditableRow
+            icon="pi pi-pencil"
+            (click)="onRowEditInit(row)"
+            class="p-button-rounded p-button-text"
+          ></button>
+          <!-- onRow Edit delete Button on Grid -->
+          <button
+            pButton
+            type="button"
+            icon="pi pi-trash"
+            (click)="deleteRecord(row)"
+            class="p-button-rounded p-button-text"
+            *ngIf="row.isNew !== true && deleteRowPermission"
+          ></button>
+          <!-- onRow Edit Save Button on Grid -->
+          <button
+            *ngIf="editing"
+            pButton
+            pRipple
+            type="button"
+            pSaveEditableRow
+            icon="pi pi-check"
+            (click)="onRowEditSave(row)"
+            class="p-button-rounded p-button-text p-button-success p-mr-2"
+          ></button>
+          <!-- onRow Edit Cancel Button on Grid -->
+          <button
+            *ngIf="editing"
+            pButton
+            pRipple
+            type="button"
+            pCancelEditableRow
+            icon="pi pi-times"
+            (click)="onRowEditCancel(row, ri)"
+            class="p-button-rounded p-button-text p-button-danger"
+          ></button>
+        </span>
+      </td>
+    </tr>
+  </ng-template>
+
+  <!-- Footer columns on Grid -->
+  <ng-template pTemplate="footer">
+    <tr *ngIf="aggregateFooter">
+      <td
+        *ngFor="let outerColumn of selectedColumns"
+        [style]="outerColumn.style"
+      >
+        <div *ngFor="let innerColumn of selectedColumns">
+          <div *ngFor="let aggr of innerColumn?.aggregate">
+            <div
+              *ngIf="
+                aggr.aggrValue?.length &&
+                ((!aggr.displayField &&
+                  innerColumn.field.toLowerCase() ===
+                    outerColumn.field.toLowerCase()) ||
+                  (aggr.displayField &&
+                    aggr.displayField.toLowerCase() ===
+                      outerColumn.field.toLowerCase()))
+              "
+            >
+              <div [innerHTML]="aggr.aggrValue"></div>
+            </div>
+          </div>
+        </div>
+      </td>
+      <td
+        *ngIf="
+          columnActions.length > 0 ||
+          (useInlineCRUD && (deleteRowPermission || editRowPermission))
+        "
+      ></td>
+    </tr>
+  </ng-template>
+
+  <!-- Footer for Empty Message columns on Grid -->
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="selectedColumns.length + 1">No records found.</td>
+    </tr>
+  </ng-template>
+</p-table>

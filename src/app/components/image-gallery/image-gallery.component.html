@@ -1,0 +1,23 @@
+<div class="col-lg-5 p-0">
+  <div class="col-lg-12 pl-48">
+    <div *ngIf="galleryImage != undefined" [ngStyle]="{ width: width }">
+      <p-galleria
+        [(value)]="galleryImage"
+        [responsiveOptions]="responsiveOptions"
+      >
+        <ng-template pTemplate="item" let-item>
+          <img [src]="item.big" [ngStyle]="{ width: width }" />
+        </ng-template>
+        <ng-template pTemplate="thumbnail" let-item>
+          <div class="p-nogutter p-justify-center">
+            <img
+              [src]="item.small"
+              [alt]="item.label"
+              [ngStyle]="{ width: '90%' }"
+            />
+          </div>
+        </ng-template>
+      </p-galleria>
+    </div>
+  </div>
+</div>

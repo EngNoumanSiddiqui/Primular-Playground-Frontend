@@ -1,0 +1,95 @@
+@import url('../shared/style.scss');
+:host {
+  ::ng-deep {
+    .p-calendar,
+    .p-dropdown,
+    .p-multiselect {
+      width: 100%;
+    }
+    .toast-error {
+      background: black !important;
+    }
+    .p-float-label label {
+      margin-top: -0.5rem !important;
+    }
+    .p-datepicker .p-datepicker-buttonbar {
+      padding: 0;
+    }
+    .hide-accordian .p-accordion-header {
+      display: none;
+    }
+  }
+}
+
+.disabled-link label,
+.disabled-link a,
+.disabled-link span,
+.disabled-link div {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+label {
+  margin: 0px;
+  margin-bottom: 5px;
+}
+
+span,
+textarea {
+  width: 100%;
+}
+
+.error {
+  color: red;
+}
+
+.link-label {
+  display: flex;
+  align-items: center;
+  height: 39px;
+  margin-top: 22px;
+  a {
+    color: #4e87f1;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+  }
+}
+
+.custom-link {
+  color: rgb(78, 135, 241);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.label-custom-link {
+  font-size: 14px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.sticky {
+  width: calc(100% - 260px);
+  position: fixed;
+  bottom: 0;
+  right: 60px;
+}
+
+.fixed-height {
+  height: calc(100vh - 65px);
+  // overflow-y: auto;
+  // overflow-x: hidden;
+}
+
+.disable-label-control {
+  pointer-events: none;
+}
+
+#remove-boder {
+  border: none !important;
+}
+input[type='text'] {
+  cursor: pointer;
+}

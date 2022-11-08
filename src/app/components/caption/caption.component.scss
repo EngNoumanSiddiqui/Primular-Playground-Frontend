@@ -1,0 +1,33 @@
+:host ::ng-deep {
+  .p-accordion .p-accordion-content {
+    border: 0;
+    padding: 0 10px;
+  }
+  .p-accordion-content div:first-child {
+    padding: 0;
+  }
+  .caption-form {
+    span div {
+      flex-direction: row !important;
+      align-items: center;
+    }
+    span div span {
+      margin-right: 10px;
+      width: 100px;
+    }
+    div input {
+      width: 100%;
+    }
+    .sticky {
+      bottom: 15px;
+      width: unset !important;
+      right: 25px !important;
+    }
+    .fixed-height {
+      height: unset;
+    }
+    span.error {
+      display: none;
+    }
+  }
+}

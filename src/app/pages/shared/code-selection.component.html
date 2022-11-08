@@ -1,0 +1,18 @@
+<se-grid
+  [rows]="codeSelectionData"
+  [columns]="lookUpColumns"
+  [allowColumnToggle]="false"
+  [pagination]="false"
+  [defaultRows]="10"
+  [lookupFilters]="true"
+  [allowSelection]="true"
+  [dataKey]="'CodeVal'"
+  [rowActions]="rowActions"
+  (onRowClick)="handleRowClick($event)"
+  [useServerSideEvents]="true"
+  (onServerSideEventChange)="handleServerSideEventChange($event)"
+  [selectionType]="gridSelectionType"
+  [scrollable]="true"
+  [scrollHeight]="'500px'"
+  [selectedRows]="selectedRows"
+></se-grid>

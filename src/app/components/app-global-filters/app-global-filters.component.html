@@ -1,0 +1,223 @@
+<div class="p-d-flex p-flex-wrap p-flex-row row">
+  <div
+    [class]="globalFilter.column ? 'p-col-' + globalFilter.column : 'p-col-3'"
+    *ngFor="let globalFilter of globalFilters"
+  >
+    <div [ngSwitch]="globalFilter.type">
+      <!-- Calender control -->
+      <span [hidden]="globalFilter.hidden">
+        <div class="p-d-flex p-flex-column" *ngSwitchCase="fiterTypes.CALENDAR">
+          <label for="basic">{{ globalFilter.displayText }}</label>
+          <div class="p-d-flex p-ai-center">
+            <p-calendar
+              class="p-flex-grow-1 p-mr-2 grow-1"
+              [placeholder]="'Select-Date'"
+              [(ngModel)]="globalFilter.value"
+              (keyup.enter)="applyFilters()"
+              (onClose)="onFocusOutEvent(globalFilter)"
+              appendTo="body"
+              [showButtonBar]="true"
+              [disabled]="globalFilter.disabled"
+            >
+            </p-calendar>
+            <span *ngIf="globalFilter.filtering">
+              <app-filter-menu [globalFilter]="globalFilter"></app-filter-menu>
+            </span>
+          </div>
+        </div>
+      </span>
+
+      <!-- Calender Range -->
+      <span [hidden]="globalFilter.hidden">
+        <div
+          class="p-d-flex p-flex-column"
+          *ngSwitchCase="fiterTypes.CALENDAR_RANGE"
+        >
+          <label for="basic">{{ globalFilter.displayText }}</label>
+          <div class="p-d-flex p-ai-center">
+            <button
+              pButton
+              type="button"
+              [disabled]="globalFilter.disabled"
+              [ngStyle]="{
+                background: globalFilter.color ? globalFilter.color : ''
+              }"
+              class="custom-btn"
+              (click)="showPrevious(globalFilter)"
+              label="Previous {{
+                globalFilter.dayRange ? globalFilter.dayRange : 'Week'
+              }} <<"
+            ></button>
+            <label
+              >Review Hours from
+              {{
+                startDate
+                  | date
+                    : (globalFilter.format ? globalFilter.format : 'MM/dd/yyyy')
+              }}
+              to
+              {{
+                endDate
+                  | date
+                    : (globalFilter.format ? globalFilter.format : 'MM/dd/yyyy')
+              }}</label
+            >
+            <button
+              pButton
+              type="button"
+              [disabled]="globalFilter.disabled"
+              [ngStyle]="{
+                background: globalFilter.color ? globalFilter.color : ''
+              }"
+              class="custom-btn"
+              (click)="showNext(globalFilter)"
+              label="Next {{
+                globalFilter.dayRange ? globalFilter.dayRange : 'Week'
+              }} >>"
+            ></button>
+          </div>
+        </div>
+      </span>
+
+      <!-- Checkbox Control -->
+      <span [hidden]="globalFilter.hidden">
+        <div class="p-d-flex p-flex-column" *ngSwitchCase="fiterTypes.CHECKBOX">
+          <label for="basic">{{ globalFilter.displayText }}</label>
+          <p-triStateCheckbox
+            class="p-d-flex p-ai-center"
+            (keyup.enter)="applyFilters()"
+            [(ngModel)]="globalFilter.value"
+            [disabled]="globalFilter.disabled"
+            (onChange)="onFocusOutEvent(globalFilter)"
+          ></p-triStateCheckbox>
+        </div>
+      </span>
+
+      <!-- Dropdown Control -->
+      <span [hidden]="globalFilter.hidden">
+        <div class="p-d-flex p-flex-column" *ngSwitchCase="fiterTypes.DROPDOWN">
+          <label for="basic">{{ globalFilter.displayText }}</label>
+          <p-dropdown
+            [(ngModel)]="globalFilter.value"
+            [name]="globalFilter.displayText"
+            [showClear]="true"
+            [placeholder]="globalFilter.displayText"
+            [options]="globalFilter.data || []"
+            [optionLabel]="globalFilter.optionLabel"
+            [optionValue]="globalFilter.optionValue"
+            [filter]="globalFilter.allowSearch"
+            (onChange)="onFocusOutEvent(globalFilter)"
+            (keyup.enter)="applyFilters()"
+            [disabled]="globalFilter.disabled"
+          ></p-dropdown>
+        </div>
+      </span>
+
+      <!-- Input control -->
+      <span [hidden]="globalFilter.hidden">
+        <div class="p-d-flex p-flex-column" *ngSwitchCase="fiterTypes.INPUT">
+          <label for="basic">{{ globalFilter.displayText }}</label>
+          <div class="p-d-flex p-flex-nowrap align-items-center">
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="globalFilter.value"
+              class="flex-grow-1 p-mr-2 grow-1"
+              (keyup.enter)="applyFilters()"
+              (blur)="onFocusOutEvent(globalFilter)"
+              [disabled]="globalFilter.disabled"
+            />
+            <span *ngIf="globalFilter.filtering">
+              <app-filter-menu [globalFilter]="globalFilter"></app-filter-menu>
+            </span>
+          </div>
+        </div>
+      </span>
+
+      <!-- NumericInput control -->
+      <span [hidden]="globalFilter.hidden">
+        <div
+          class="p-d-flex p-flex-column"
+          *ngSwitchCase="fiterTypes.NUMERICINPUT"
+        >
+          <label for="basic">{{ globalFilter.displayText }}</label>
+          <div class="p-d-flex flex-nowrap align-items-center">
+            <input
+              type="number"
+              pInputText
+              [(ngModel)]="globalFilter.value"
+              class="flex-grow-1 p-mr-2 grow-1"
+              (keyup.enter)="applyFilters()"
+              (blur)="onFocusOutEvent(globalFilter)"
+              [disabled]="globalFilter.disabled"
+            />
+            <span *ngIf="globalFilter.filtering">
+              <app-filter-menu [globalFilter]="globalFilter"></app-filter-menu>
+            </span>
+          </div>
+        </div>
+      </span>
+
+      <!-- MultiSelect control -->
+      <span [hidden]="globalFilter.hidden">
+        <div
+          class="p-d-flex p-flex-column"
+          *ngSwitchCase="fiterTypes.MULTISELECT"
+        >
+          <label for="basic">{{ globalFilter.displayText }}</label>
+          <p-multiSelect
+            [(ngModel)]="globalFilter.value"
+            [options]="globalFilter.data"
+            optionLabel="label"
+            (keyup.enter)="applyFilters()"
+            optionValue="value"
+            (blur)="onFocusOutEvent(globalFilter)"
+            [appendTo]="'body'"
+            [disabled]="globalFilter.disabled"
+          ></p-multiSelect>
+        </div>
+      </span>
+
+      <!-- Lookup Control Field -->
+      <span [hidden]="globalFilter.hidden">
+        <div
+          class="p-d-flex p-flex-column"
+          *ngSwitchCase="fiterTypes.LOOKUP_INPUT"
+        >
+          <label for="basic">{{ globalFilter.displayText }}</label>
+          <input
+            [id]="globalFilter.field"
+            type="text"
+            pInputText
+            [(ngModel)]="globalFilter.value"
+            (blur)="onFocusOutEvent(globalFilter)"
+            [name]="globalFilter.field"
+            (keyup.enter)="applyFilters()"
+            (click)="selectLookupField(globalFilter)"
+            [disabled]="globalFilter.disabled"
+          />
+        </div>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Apply button -->
+<div class="p-d-flex p-jc-end">
+  <button
+    pButton
+    type="button"
+    icon="pi pi-search"
+    (click)="applyFilters()"
+    class="p-button-success"
+  ></button>
+
+  <!-- Close button -->
+  <button
+    pButton
+    type="button"
+    icon="pi pi-refresh"
+    (click)="clearFilters()"
+    class="p-button-danger p-ml-3"
+  ></button>
+</div>

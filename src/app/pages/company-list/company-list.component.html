@@ -1,0 +1,16 @@
+<h1>Company Component</h1>
+<se-grid
+  [rows]="companys"
+  [columns]="columns"
+  [totalRecords]="totalRecords"
+  [allowColumnToggle]="true"
+  [useServerSideEvents]="true"
+  [pagination]="true"
+  [defaultRows]="10"
+  [showCurrentPageReport]="true"
+  (onRowClick)="handleRowClick($event)"
+  (onSortChange)="handleSortChange($event)"
+  (onFilterChange)="handleFilterChange($event)"
+  (onPageChange)="handleServerSideEventPagination($event)"
+  (onServerSideEventChange)="handleServerSideEventChange($event)"
+></se-grid>

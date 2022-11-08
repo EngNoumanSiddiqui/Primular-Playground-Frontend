@@ -1,0 +1,17 @@
+<h1>Suite Reasons</h1>
+<app-grid
+  [rows]="suiteReasons"
+  [columns]="columns"
+  [allowColumnToggle]="true"
+  [useServerSideEvents]="true"
+  (onRowClick)="handleRowClick($event)"
+  (onSortChange)="handleSortChange($event)"
+  (onFilterChange)="handleFilterChange($event)"
+  (onServerSideEventChange)="handleServerSideEventChange($event)"
+  [dataKey]="'SuitReasonID'"
+  [useInlineCRUD]="true"
+  (onRowDelete)="deleteRow($event)"
+  (onRowUpdate)="updateRow($event)"
+  (onRowAdd)="addInlineRow($event)"
+  [newGridRow]="newRowData"
+></app-grid>

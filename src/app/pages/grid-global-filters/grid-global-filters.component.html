@@ -1,0 +1,36 @@
+<div class="center-content">
+  <h1>Grid Component with global filters</h1>
+  <app-filter
+    [globalFilters]="globalFilters"
+    (filtersApplied)="globalFiltersApplied($event)"
+    [showDialogFilter]="false"
+  ></app-filter>
+
+  <app-filter
+    [globalFilters]="globalFilters"
+    (filtersApplied)="globalFiltersApplied($event)"
+    [showDialogFilter]="true"
+  ></app-filter>
+
+  <!-- Grid -->
+  <app-grid
+    *ngIf="globalFilterData"
+    [rows]="users"
+    [columns]="lookUpColumns"
+    [totalRecords]="totalRecords"
+    [globalFilterData]="globalFilterData"
+    [pagination]="true"
+    [defaultRows]="10"
+    [lookupFilters]="true"
+    [allowColumnToggle]="true"
+    [showCurrentPageReport]="true"
+    [useServerSideEvents]="true"
+    (onRowClick)="handleRowClick($event)"
+    (onSortChange)="handleSortChange($event)"
+    (onFilterChange)="handleFilterChange($event)"
+    (onPageChange)="handleServerSideEventPagination($event)"
+    (onServerSideEventChange)="handleServerSideEventChange($event)"
+    [scrollable]="true"
+    [scrollHeight]="'500px'"
+  ></app-grid>
+</div>

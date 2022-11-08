@@ -1,0 +1,40 @@
+@import url('../shared/style.scss');
+.row {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+}
+p-calendar {
+  display: flex;
+  justify-content: stretch;
+}
+p-checkbox {
+  height: 42px;
+}
+.p-dialog .p-dialog-content {
+  overflow: visible !important;
+}
+:host {
+  ::ng-deep {
+    input,
+    p-calendar,
+    .p-calendar,
+    .p-dropdown,
+    .p-multiselect {
+      width: 100%;
+    }
+    .custom-btn button {
+      background: #efefef;
+      border: #eee;
+      border-radius: 0;
+      padding: 5px 15px;
+      font-size: 12px;
+      color: #585858;
+      margin: 0 5px;
+
+      &:hover {
+        background-color: #dad5d5;
+        color: black;
+      }
+    }
+  }
+}

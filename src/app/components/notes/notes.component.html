@@ -1,0 +1,36 @@
+<textarea
+  class="p-col-12 notes"
+  pInputTextarea
+  [(ngModel)]="note"
+  [disabled]="disabledText"
+  #name="ngModel"
+  required
+></textarea>
+<span
+  *ngIf="name.invalid && (name.dirty || name.touched)"
+  class="validationClass"
+>
+  Note can not be empty
+</span>
+
+<div class="p-col-12 p-d-flex p-jc-end">
+  <button
+    pButton
+    type="submit"
+    icon="pi pi-check"
+    label="OK"
+    class="p-button-success"
+    (click)="handleOk()"
+    [disabled]="name.invalid"
+  ></button>
+
+  <!-- Close button -->
+  <button
+    pButton
+    type="button"
+    icon="pi pi-times"
+    label="Cancel"
+    class="p-button-danger p-ml-3"
+    (click)="handleCancel()"
+  ></button>
+</div>

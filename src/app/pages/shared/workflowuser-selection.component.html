@@ -1,0 +1,16 @@
+<se-grid
+  [rows]="codeSelectionData"
+  [columns]="lookUpColumns"
+  [allowColumnToggle]="false"
+  [pagination]="false"
+  [defaultRows]="10"
+  [lookupFilters]="true"
+  [allowSelection]="true"
+  [dataKey]="'WorkFlowUserId'"
+  [rowActions]="rowActions"
+  (onRowClick)="handleRowClick($event)"
+  [useServerSideEvents]="true"
+  (onServerSideEventChange)="handleServerSideEventChange($event)"
+  [selectionType]="gridSelectionType"
+  [selectedRows]="selectedRows"
+></se-grid>

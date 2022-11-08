@@ -1,0 +1,13 @@
+<button
+  *ngIf="showDialogFilter"
+  pButton
+  type="button"
+  icon="pi pi-search-plus"
+  (click)="openFilters()"
+></button>
+
+<app-global-filters
+  *ngIf="globalFilters && !showDialogFilter"
+  [globalFilters]="globalFilters"
+  (filtersApplied)="globalFiltersApplied($event)"
+></app-global-filters>

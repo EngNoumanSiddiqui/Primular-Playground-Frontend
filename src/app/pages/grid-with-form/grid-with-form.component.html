@@ -1,0 +1,9 @@
+<div class="center-content">
+  <app-dynamic-form
+    [form]="dynamicForm"
+    [hideSaveButton]="true"
+    [hideCancelButton]="true"
+    (saveForm)="saveForm($event)"
+    (cancelForm)="cancelForm($event)"
+  ></app-dynamic-form>
+</div>

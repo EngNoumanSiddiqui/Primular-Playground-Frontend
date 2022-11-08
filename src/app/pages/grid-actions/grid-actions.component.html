@@ -1,0 +1,29 @@
+<div class="center-content">
+  <h1>Grid Component with global filters and actions</h1>
+
+  <!-- Global filter -->
+  <se-filter
+    [globalFilters]="globalFilters"
+    (filtersApplied)="globalFiltersApplied($event)"
+  ></se-filter>
+
+  <!-- Grid -->
+  <se-grid
+    [rows]="users"
+    [columns]="lookUpColumns"
+    [totalRecords]="totalRecords"
+    [globalFilterData]="globalFilterData"
+    [pagination]="true"
+    [defaultRows]="10"
+    [lookupFilters]="true"
+    [allowColumnToggle]="true"
+    [showCurrentPageReport]="true"
+    [useServerSideEvents]="true"
+    (onRowClick)="handleRowClick($event)"
+    (onSortChange)="handleSortChange($event)"
+    (onFilterChange)="handleFilterChange($event)"
+    (onPageChange)="handleServerSideEventPagination($event)"
+    (onServerSideEventChange)="handleServerSideEventChange($event)"
+    [columnActions]="columnActions"
+  ></se-grid>
+</div>

@@ -1,0 +1,30 @@
+<div class="center-content">
+  <h1>Grid Component</h1>
+  <app-grid
+    [rows]="users"
+    [columns]="columns"
+    [permissions]="permissions"
+    [allowColumnToggle]="true"
+    [allowExportToExcel]="true"
+    [allowExportToPdf]="true"
+    [useServerSideEvents]="true"
+    (onRowClick)="handleRowClick($event)"
+    (onRowCheckBox)="handleRowCheckBox($event)"
+    (onSortChange)="handleSortChange($event)"
+    (onFilterChange)="handleFilterChange($event)"
+    (onServerSideEventChange)="handleServerSideEventChange($event)"
+    [dataKey]="'id'"
+    [useInlineCRUD]="true"
+    (onRowDelete)="deleteRow($event)"
+    (onRowUpdate)="updateRow($event)"
+    (onRowAdd)="addInlineRow($event)"
+    [loading]="loading"
+    [newGridRow]="newRowData"
+    [rowHover]="true"
+    [pagination]="false"
+    [hideFilter]="false"
+    [defaultRows]="'5'"
+    [wordWrap]="true"
+    [allowCaching]="true"
+  ></app-grid>
+</div>

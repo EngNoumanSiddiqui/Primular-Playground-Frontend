@@ -1,0 +1,28 @@
+<div class="wrapper">
+  <menu-bar
+    [menuItems]="items"
+    [menuFooter]="detail"
+    [menuTitle]="'Playground'"
+    [menuBackColor]="'#cc7272'"
+    [hiddenPanelMenu]="hiddenPanelMenu"
+    (onClickEvent)="onClickEvent()"
+    [toolTip]="'Web Clock'"
+  ></menu-bar>
+  <div class="p-col-md-8 grid-container">
+    <div *ngIf="currentRoute != '/login' && isLoggedIn">
+      <button
+        class="p-button p-button-danger p-m-2 p-ml-auto"
+        (click)="logOut()"
+      >
+        <span
+          class="p-button-icon p-button-icon-left pi pi-sign-out"
+          aria-hidden="true"
+        ></span>
+        Logout
+      </button>
+    </div>
+    <app-loader></app-loader>
+
+    <router-outlet></router-outlet>
+  </div>
+</div>
